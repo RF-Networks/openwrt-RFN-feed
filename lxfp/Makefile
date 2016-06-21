@@ -45,8 +45,8 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CC) $(TARGET_CCFLAGS) $(SOURCES_C) ; \
-	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) ; \
+        $(TARGET_CC) $(TARGET_CCFLAGS) $(SOURCES_C)
+	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) $(OBJECTS_C) 
         $(TARGET_CXX) $(OBJECTS) $(OBJECTS_C) -o $(PKG_BUILD_DIR)/lxfp
 endef
 
