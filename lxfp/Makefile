@@ -7,7 +7,7 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=lxfp
 PKG_RELEASE:=1
 
-SOURCES = \
+SOURCES:=\
 	src/Bootloader.cpp \
 	src/Device.cpp \
 	src/DeviceFactory.cpp \
@@ -21,13 +21,13 @@ SOURCES = \
 	src/UploaderFirstAckVariant.cpp \
 	src/LeV2Bootloader.cpp
 
-SOURCES_C = \
+SOURCES_C:=\
 	src/at.c \
 	src/log.c
 
-OBJECTS = $(SOURCES:.cpp=.o)
+OBJECTS:=$(SOURCES:.cpp=.o)
 
-OBJECTS_C = $(SOURCES_C:.c=.o)
+OBJECTS_C:=$(SOURCES_C:.c=.o)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -45,8 +45,8 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) $(OBJECTS) $< ; \
-        $(TARGET_CC) $(TARGET_CCFLAGS) $(OBJECTS_C) $< ; \
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) $< ; \
+        $(TARGET_CC) $(TARGET_CCFLAGS) $< ; \
         $(TARGET_CXX) $(OBJECTS) $(OBJECTS_C) -o $(PKG_BUILD_DIR)/lxfp
 endef
 
