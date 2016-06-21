@@ -23,7 +23,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/GPIO.cpp src/main.cpp -o $(PKG_BUILD_DIR)/rfnwatchdog;
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/GPIO.cpp src/main.cpp -o $(PKG_BUILD_DIR)/rfnwatchdog
 endef
 
 define Package/RFN-Watchdog/install
