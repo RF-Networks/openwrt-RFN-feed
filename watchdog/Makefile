@@ -29,7 +29,7 @@ endef
 define Package/RFN-Watchdog/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/rfnwatchdog $(1)/usr/bin/rfnwatchdog
-        $(CP) ./files/* $(1)
+	$(CP) ./files/* $(1)
 endef
 
 $(eval $(call BuildPackage,RFN-Watchdog))
