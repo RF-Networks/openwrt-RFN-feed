@@ -23,8 +23,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CC) $(TARGET_CFLAGS) $(EXTRA_CFLAGS) -Wall -Werror src/at.c src/log.c -o "$@" "$<"; \  
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Bootloader.cpp src/Device.cpp src/DeviceFactory.cpp src/GeBootloader.cpp src/HeBootloader.cpp src/LE9x0Bootloader.cpp src/LeV2Bootloader.cpp src/Uploader.cpp src/UploaderFirstAckVariant.cpp src/V2SerialBootloader.cpp src/lxfp.cpp src/xE910V2UsbBootloader.cpp -o src/at.o src/log.o $(PKG_BUILD_DIR)/lxfp
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/at.cpp src/log.cpp src/Bootloader.cpp src/Device.cpp src/DeviceFactory.cpp src/GeBootloader.cpp src/HeBootloader.cpp src/LE9x0Bootloader.cpp src/LeV2Bootloader.cpp src/Uploader.cpp src/UploaderFirstAckVariant.cpp src/V2SerialBootloader.cpp src/lxfp.cpp src/xE910V2UsbBootloader.cpp -o $(PKG_BUILD_DIR)/lxfp
 endef
 
 define Package/lxfp/install
