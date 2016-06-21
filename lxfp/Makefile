@@ -20,8 +20,8 @@ SOURCES:=\
 	src/HeBootloader.cpp \
 	src/UploaderFirstAckVariant.cpp \
 	src/LeV2Bootloader.cpp \
-	src/at.c \
-	src/log.c
+	src/at.cpp \
+	src/log.cpp
 
 include $(INCLUDE_DIR)/package.mk
 
