@@ -5,6 +5,10 @@
 
 #include "log.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static int _send_command(int fd,
         char *cmd,
         char *resp,
@@ -136,3 +140,7 @@ int open_device(char *dev_name)
     return open(dev_name, O_RDWR|O_NOCTTY);
 }
 
+
+#ifdef __cplusplus
+}
+#endif

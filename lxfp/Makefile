@@ -19,15 +19,9 @@ SOURCES:=\
 	src/xE910V2UsbBootloader.cpp \
 	src/HeBootloader.cpp \
 	src/UploaderFirstAckVariant.cpp \
-	src/LeV2Bootloader.cpp
-
-SOURCES_C:=\
+	src/LeV2Bootloader.cpp \
 	src/at.c \
 	src/log.c
-
-OBJECTS:=$(SOURCES:.cpp=.o)
-
-OBJECTS_C:=$(SOURCES_C:.c=.o)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -45,9 +39,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-	$(TARGET_CC) $(TARGET_CCFLAGS) -c $(SOURCES_C) -o src/$<
-	$(TARGET_CXX) $(TARGET_CXXFLAGS) -c $(SOURCES) $(OBJECTS_C) -o src/$< 
-	$(TARGET_CXX) $(OBJECTS) $(OBJECTS_C) -o $(PKG_BUILD_DIR)/lxfp
+	$(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 $(SOURCES) -o $(PKG_BUILD_DIR)/lxfp
 endef
 
 define Package/lxfp/install

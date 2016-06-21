@@ -3,6 +3,10 @@
 
 #include "log.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int log_level = LOG_LEVEL_INFO;
 
 void set_log_level(int level)
@@ -36,3 +40,6 @@ void dbg_print(int level, const char *fmt, ...)
     va_end(args);
 }
 
+#ifdef __cplusplus
+}
+#endif
