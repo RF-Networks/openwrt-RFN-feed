@@ -28,7 +28,7 @@ endef
 
 define Package/RFN-lrffp/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/rfnwatchdog $(1)/usr/bin/lrffp
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lrffp $(1)/usr/bin/lrffp
 endef
 
 $(eval $(call BuildPackage,RFN-lrffp))
