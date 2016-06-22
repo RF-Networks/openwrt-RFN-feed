@@ -36,7 +36,7 @@ define Package/mtk-linkit-webui/install
 	$(INSTALL_DIR) $(1)/www/build
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/build/* $(1)/www/build/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/zh-*.html $(1)/www/
-        $(INSTALL_BIN) $(PKG_BUILD_DIR)/app/ru-*.html $(1)/www/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/ru-*.html $(1)/www/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/index.html $(1)/www/index_7688.html
 endef
 
