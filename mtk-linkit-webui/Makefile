@@ -38,6 +38,7 @@ define Package/mtk-linkit-webui/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/zh-*.html $(1)/www/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/ru-*.html $(1)/www/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/index.html $(1)/www/index_7688.html
+	$(CP) ./files/* $(1)
 endef
 
 $(eval $(call BuildPackage,mtk-linkit-webui))
