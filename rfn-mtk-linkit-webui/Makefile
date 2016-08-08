@@ -20,8 +20,9 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/rfn-mtk-linkit-webui
   TITLE:=LinkIt Smart 7688 Webui
-  DEPENDS:=@TARGET_ramips_mt7688_LinkIt7688 mtk-linkit-webui
-  HIDDEN:=1
+  DEPENDS:=@TARGET_ramips_mt7688_LinkIt7688 \
+		mtk-linkit-webui
+  CATEGORY:=RFN
 endef
 
 define Build/Configure
