@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rfn-mtk-linkit-webui
-PKG_VERSION:=2015-11-18
+PKG_VERSION:=2016-12-25
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
 PKG_SOURCE_PROTO:=git
