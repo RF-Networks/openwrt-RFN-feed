@@ -52,6 +52,8 @@ bool Device::enterBootMode() {
 			sleep(1);
 			bootStringLen = sizeof(bootstring5);
 			bytesWrite = write(fd_device, bootstring5, bootStringLen);
+			sleep(1);
+			bytesWrite = write(fd_device, bootstring5, bootStringLen);
 		} else {
 			bootStringLen = sizeof(bootstring1);
 			bytesWrite = write(fd_device, bootstring1, bootStringLen);
