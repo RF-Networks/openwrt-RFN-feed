@@ -24,7 +24,7 @@
 using namespace std;
 
 static int verbose_flag = 0;
-static int deviceId = 1;
+static int deviceId = 0;
 static int telit_firmware = 0;
 static Device* dev = NULL;
 static char* deviceName;
@@ -32,7 +32,7 @@ static int deviceSpeed = 1;
 static int bootloader_check = 0;
 
 static const char* deviceNames[] = {
-    "",
+    "All",
 	"RFN",
 	"Mesh",
 	"Star"
@@ -40,6 +40,9 @@ static const char* deviceNames[] = {
 
 static void identify_device(char *selection) {
 	switch (*selection) {
+		case DEVICE_ALL_SELECTION:
+			deviceId = DEVICE_ALL;
+			break;
 		case DEVICE_TAG_READER_ROUTER_SELECTION:
 			deviceId = DEVICE_TAG_READER_ROUTER;
 			break;
@@ -150,28 +153,75 @@ int main(int argc, char *argv[]) {
 
 	deviceName = argv[optind++];
 
-	dev = DeviceFactory::getDevice(deviceId);
+	if (deviceId == DEVICE_ALL && bootloader_check)
+	{
+		// Try to switch to bootloader
+		do {
+			switch (deviceId)
+			{
+				case DEVICE_ALL:
+					deviceId = DEVICE_TAG_READER_ROUTER;
+					break;
+				case DEVICE_TAG_READER_ROUTER:
+					deviceId = DEVICE_COORDINATOR;
+					break;
+				case DEVICE_COORDINATOR:
+					deviceId = DEVICE_STAR;
+					break;
+			}
+			dev = DeviceFactory::getDevice(deviceId);
+			if (dev == NULL)
+				manage_failure(fdStream, "lrffp Device not supported\n");
 
-	if (dev == NULL)
-		manage_failure(fdStream, "lrffp Device not supported\n");
+			dev->setType(deviceId);
+			dev->setSpeed(deviceSpeed);
+			dev->setFirmwareType(telit_firmware);
 
-	dev->setType(deviceId);
-	dev->setSpeed(deviceSpeed);
-	dev->setFirmwareType(telit_firmware);
+			if (verbose_flag)
+				set_log_level(LOG_LEVEL_VERBOSE);
 
-	if (verbose_flag)
-		set_log_level(LOG_LEVEL_VERBOSE);
+			if (!dev->initialize(fdStream, deviceName))
+				manage_failure(fdStream, "lrffp Error checking stream\n");
+			sleep(1);
 
-	if (!dev->initialize(fdStream, deviceName))
-		manage_failure(fdStream, "lrffp Error checking stream\n");
-	sleep(1);
-
-	if (bootloader_check) {
-		ALOGI("lrffp Switching %s to bootloader\n", deviceName);
-		if (!dev->enterBootMode()) {
-			manage_failure(fdStream, "lrffp Error switching to bootloader\n");
-		}
+			if (bootloader_check) {
+				ALOGI("lrffp Switching %s to bootloader %s\n", deviceName, deviceNames[deviceId]);
+				if (!dev->enterBootMode()) {
+					manage_failure(fdStream, "lrffp Error switching to bootloader\n");
+				}
+				else {
+					break;
+				}
+			}
+			DeviceFactory::destroyDevice(dev);
+		} while (deviceId != DEVICE_STAR);
 		sleep(1);
+	}
+	else
+	{
+		dev = DeviceFactory::getDevice(deviceId);
+
+		if (dev == NULL)
+			manage_failure(fdStream, "lrffp Device not supported\n");
+
+		dev->setType(deviceId);
+		dev->setSpeed(deviceSpeed);
+		dev->setFirmwareType(telit_firmware);
+
+		if (verbose_flag)
+			set_log_level(LOG_LEVEL_VERBOSE);
+
+		if (!dev->initialize(fdStream, deviceName))
+			manage_failure(fdStream, "lrffp Error checking stream\n");
+		sleep(1);
+
+		if (bootloader_check) {
+			ALOGI("lrffp Switching %s to bootloader\n", deviceName);
+			if (!dev->enterBootMode()) {
+				manage_failure(fdStream, "lrffp Error switching to bootloader\n");
+			}
+			sleep(1);
+		}
 	}
 
 	if (!dev->uploadStream())
@@ -181,5 +231,4 @@ int main(int argc, char *argv[]) {
 	DeviceFactory::destroyDevice(dev);
 	exit(EXIT_SUCCESS);
 }
-
 

@@ -23,10 +23,12 @@
     "\t 2 - 115200\n" \
     "--enterbootloader, -b: enter device to bootloader mode\n" \
 
+#define DEVICE_ALL_SELECTION		            '0'
 #define DEVICE_TAG_READER_ROUTER_SELECTION      '1'
 #define DEVICE_COORDINATOR_SELECTION            '2'
 #define DEVICE_STAR_SELECTION		            '3'
 
+#define DEVICE_ALL							     0
 #define DEVICE_TAG_READER_ROUTER			     1
 #define DEVICE_COORDINATOR				         2
 #define DEVICE_STAR						         3
@@ -38,4 +40,3 @@
 #define DEVICE_SPEED_115200     				 2
 
 #endif /* LRFFP_H_ */
-

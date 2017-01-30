@@ -19,12 +19,12 @@ bool Device::initialize(ifstream &stream, const char* deviceName) {
 bool Device::enterBootMode() {
 	bool retval = false;
 	int origMaxRetries = maxRetry;
-	ssize_t bytesAvailable = 0;
-	uint32_t delay = BYTES_IN_BUFFER_DELAY;
+	//ssize_t bytesAvailable = 0;
+	//uint32_t delay = BYTES_IN_BUFFER_DELAY;
 	uint8_t bootstring1 [] = { 0xAB, 0x65, 0x00, 0x00, 0x08, 0xAA, 0xAA, 0x05, 0x00, 0x00, 0x0B, 0x00, 0x64, 0xCD };
 	uint8_t bootstring2 [] = { 0xAB, 0x6D, 0xFF, 0xFF, 0x41, 0x54, 0x42, 0x4C, 0x0D, 0xCD };
 	uint8_t bootstring3 [] = { 0x6D, 0xFF, 0xFF, 0x41, 0x54, 0x42, 0x4C, 0x0D };
-	uint8_t bootstring4 [] = { 0x2B, 0x2B, 0x2B, 0x0D };
+	uint8_t bootstring4 [] = { 0x2B, 0x2B, 0x2B };
 	uint8_t bootstring5 [] = { 0x41, 0x54, 0x42, 0x4C, 0x0D };
 	ssize_t bytesWrite = 0, bootStringLen;
 
@@ -52,26 +52,45 @@ bool Device::enterBootMode() {
 			sleep(1);
 			bootStringLen = sizeof(bootstring5);
 			bytesWrite = write(fd_device, bootstring5, bootStringLen);
-			sleep(1);
+			sleep(2);
 			bytesWrite = write(fd_device, bootstring5, bootStringLen);
 		} else {
 			bootStringLen = sizeof(bootstring1);
 			bytesWrite = write(fd_device, bootstring1, bootStringLen);
 		}
 		if (bytesWrite == bootStringLen) {
-			do {
-				ioctl(fd_device, FIONREAD, &bytesAvailable);
-				delay--;
-			} while (bytesAvailable < 12 && delay);
-			break;
+			// Check bootloader mode
+			sleep(1);
+			if (!changeBaudRate(2)) {
+				ALOGE("lrffp enterBootMode Unable to set baudrate\n");
+				err = E_OSCALL;
+				return false;
+			}
+			sleep(1);
+			if (!uploader->enterFlashingMode(this))
+			{
+				ALOGW("Failed entering bootloader mode... %d\n", speed);
+				if (speed != 2)
+					changeBaudRate(speed);
+			}
+			else {
+				ALOGW("Entered bootloader mode\n");
+				retval = true;
+				break;
+			}
+//			do {
+//				ioctl(fd_device, FIONREAD, &bytesAvailable);
+//				delay--;
+//			} while (bytesAvailable < 12 && delay);
+//			break;
 		} else {
             ALOGE("write returned %d instead of %d\n", bytesWrite, bootStringLen);
         }
 	}
 	if (maxRetry == -1)
 		err = E_FLASHER_BOOT;
-	else
-		retval = true;
+//	else
+//		retval = true;
 
 	sleep(1);
 
