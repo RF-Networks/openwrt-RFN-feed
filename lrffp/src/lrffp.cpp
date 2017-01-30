@@ -64,6 +64,8 @@ static void identify_speed(char *selection) {
 			deviceSpeed = DEVICE_SPEED_115200;
 			break;
 		case DEVICE_SPEED_SELECTION_19200:
+			deviceSpeed = DEVICE_SPEED_19200;
+			break;
 		default:
 			ALOGE("default speed 19200\n");
 			deviceSpeed = DEVICE_SPEED_19200;
@@ -144,8 +146,12 @@ void manage_failure(ifstream &fs, const char *msg) {
 }
 
 int main(int argc, char *argv[]) {
+	bool enterflashMode = true;
 	ifstream fdStream;
 	check_args(argc, argv);
+
+	if (!bootloader_check && deviceId == DEVICE_ALL)
+		deviceId = DEVICE_TAG_READER_ROUTER;
 
 	ALOGI("lrffp Device chosen: %s\n", deviceNames[deviceId]);
 
@@ -180,6 +186,7 @@ int main(int argc, char *argv[]) {
 			if (verbose_flag)
 				set_log_level(LOG_LEVEL_VERBOSE);
 
+			fdStream.seekg(0, fdStream.beg);
 			if (!dev->initialize(fdStream, deviceName))
 				manage_failure(fdStream, "lrffp Error checking stream\n");
 			sleep(1);
@@ -187,15 +194,19 @@ int main(int argc, char *argv[]) {
 			if (bootloader_check) {
 				ALOGI("lrffp Switching %s to bootloader %s\n", deviceName, deviceNames[deviceId]);
 				if (!dev->enterBootMode()) {
-					manage_failure(fdStream, "lrffp Error switching to bootloader\n");
+					//manage_failure(fdStream, "lrffp Error switching to bootloader\n");
 				}
 				else {
+					enterflashMode = false;
 					break;
 				}
 			}
+
 			DeviceFactory::destroyDevice(dev);
 		} while (deviceId != DEVICE_STAR);
 		sleep(1);
+		if (dev == NULL)
+			manage_failure(fdStream, "lrffp Error switching to bootloader\n");
 	}
 	else
 	{
@@ -224,7 +235,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (!dev->uploadStream())
+	if (!dev->uploadStream(enterflashMode))
 		manage_failure(fdStream, "lrffp Error uploading stream\n");
 
 	ALOGI("lrffp Stream uploaded successfully\n");

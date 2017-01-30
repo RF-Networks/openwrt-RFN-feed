@@ -46,26 +46,27 @@ bool Uploader::initializeStream(ifstream &stream) {
 	 return (err == E_SUCCESS);
 }
 
-bool Uploader::uploadStream(Device* device) {
+bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 	unsigned int pointer = 0;
 	int retry = 0;
 	err = E_SUCCESS;
-	ALOGD("Entering flashing mode...\n");
-	while (retry < 3) {
-		if (!enterFlashingMode(device)) {
-			err = E_CANT_ENTER_FLASH;
-		} else {
-			err = E_SUCCESS;
-			break;
+	if (enterflashMode) {
+		ALOGD("Entering flashing mode...\n");
+		while (retry < 3) {
+			if (!enterFlashingMode(device)) {
+				err = E_CANT_ENTER_FLASH;
+			} else {
+				err = E_SUCCESS;
+				break;
+			}
+			retry++;
 		}
-		retry++;
+		if (retry > 2 || err == E_CANT_ENTER_FLASH) {
+			err = E_CANT_ENTER_FLASH;
+			return false;
+		}
+		ALOGD("Device is in flashing mode.\n");
 	}
-	if (retry > 2 || err == E_CANT_ENTER_FLASH) {
-		err = E_CANT_ENTER_FLASH;
-		return false;
-	}
-	ALOGD("Device is in flashing mode.\n");
-
 	ALOGD("Erasing memory...\n");
 	if (!eraseMemory(device)) {
 		err = E_CANT_ERASE_FLASH;

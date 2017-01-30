@@ -39,13 +39,13 @@ public:
 				counter(1000),
 				err(E_SUCCESS),
 				speed(1),
-				maxRetry(1000),
+				maxRetry(3),
 				telit_firmware(0) {}
 	virtual ~Device();
 
 	virtual bool initialize(ifstream &stream, const char* deviceName);
 	virtual bool enterBootMode();
-	virtual bool uploadStream();
+	virtual bool uploadStream(bool enterflashMode);
 
 	void setType(int t) {
 		type = t;

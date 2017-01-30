@@ -34,7 +34,7 @@ public:
 	Uploader();
 	virtual ~Uploader();
 	virtual bool initializeStream(ifstream &stream);
-	virtual bool uploadStream(Device* device);
+	virtual bool uploadStream(Device* device, bool enterflashMode = true);
 };
 
 #endif /* UPLOADER_H_ */

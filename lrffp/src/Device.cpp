@@ -7,7 +7,8 @@
 using namespace std;
 
 Device::~Device() {
-
+	if (fd_device > -1)
+		close(fd_device);
 }
 
 bool Device::initialize(ifstream &stream, const char* deviceName) {
@@ -69,11 +70,12 @@ bool Device::enterBootMode() {
 			sleep(1);
 			if (!uploader->enterFlashingMode(this))
 			{
-				ALOGW("Failed entering bootloader mode... %d\n", speed);
+				ALOGW("Failed entering bootloader mode...\n");
 				if (speed != 2)
 					changeBaudRate(speed);
 			}
 			else {
+				sleep(1);
 				ALOGW("Entered bootloader mode\n");
 				retval = true;
 				break;
@@ -155,12 +157,12 @@ end:
     return (err == E_SUCCESS);
 }
 
-bool Device::uploadStream() {
+bool Device::uploadStream(bool enterflashMode) {
 	if (!changeBaudRate(2)) {
 		ALOGE("lrffp enterBootMode Unable to set baudrate\n");
 		err = E_OSCALL;
 		return false;
 	}
 	sleep(1);
-    return uploader->uploadStream(this);
+    return uploader->uploadStream(this, enterflashMode);
 }
