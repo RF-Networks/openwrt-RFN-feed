@@ -136,6 +136,8 @@ bool Uploader::eraseMemory(Device* device) {
 
 bool Uploader::sendFirmwareChunk(Device* device, ssize_t offset) {
 	uint8_t tmp[270];
+	uint8_t retry;
+	bool res;
 	for (int i = 0; i < 11; i++)
 		tmp[i] = 0x30;
 	//ALOGD("Firmware type %d\n", device->getFirmwareType());
@@ -148,7 +150,14 @@ bool Uploader::sendFirmwareChunk(Device* device, ssize_t offset) {
 		else
 			tmp[i] = 0xFF;
 	}
-	return sendFlashCommand(device, tmp, 270);
+	retry = 0;
+	while (retry < 3) {
+		res = sendFlashCommand(device, tmp, 270);
+		if (res)
+			return true;
+		retry++;
+	}
+	return false;
 }
 
 bool Uploader::compareCRC(Device* device, unsigned int pointer) {
