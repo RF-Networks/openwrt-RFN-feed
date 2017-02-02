@@ -156,6 +156,7 @@ bool Uploader::sendFirmwareChunk(Device* device, ssize_t offset) {
 		if (res)
 			return true;
 		retry++;
+		usleep(100);
 	}
 	return false;
 }
