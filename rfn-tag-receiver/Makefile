@@ -15,7 +15,8 @@ include $(INCLUDE_DIR)/package.mk
 define Package/rfn-tag-receiver
   TITLE:=RF-Networks Tag Receiver
   DEPENDS:=@TARGET_ramips_mt7688_LinkIt7688 \
-        +boost-signals +libpthread +libstdcpp
+        +boost-signals +libpthread +libstdcpp \
+        +libmosquitto +libubox +libuci +zlib
   CATEGORY:=RFN
   DEFAULT:=m
 endef
