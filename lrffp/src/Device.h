@@ -58,6 +58,13 @@ public:
 	void setFirmwareType(int ft) {
 		telit_firmware = ft;
 	}
+	void setRS485GPIO(int gpio) {
+		if (gpio < 0)
+			return;
+		uploader->rs485dir = new GPIO(gpio);
+		if (uploader->rs485dir != nullptr)
+			uploader->rs485dir->Direction(GPIODirection::GPIO_OUT);
+	}
 	uint8_t getFirmwareType(void) const { return telit_firmware; }
 	int getFileDescriptor(void) const { return fd_device; }
 

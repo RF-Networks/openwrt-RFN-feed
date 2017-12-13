@@ -5,7 +5,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=RFN-lrffp
-PKG_RELEASE:=1
+PKG_RELEASE:=1.00.02
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -23,7 +23,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Device.cpp src/DeviceFactory.cpp src/Uploader.cpp src/log.cpp src/lrffp.cpp -o $(PKG_BUILD_DIR)/lrffp
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Device.cpp src/DeviceFactory.cpp src/Uploader.cpp src/log.cpp src/lrffp.cpp src/GPIO.cpp -o $(PKG_BUILD_DIR)/lrffp
 endef
 
 define Package/RFN-lrffp/install

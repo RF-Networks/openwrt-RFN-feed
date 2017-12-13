@@ -30,6 +30,7 @@ static Device* dev = NULL;
 static char* deviceName;
 static int deviceSpeed = 1;
 static int bootloader_check = 0;
+static int rs485dirgpio = -1;
 
 static const char* deviceNames[] = {
     "All",
@@ -72,6 +73,19 @@ static void identify_speed(char *selection) {
 	}
 }
 
+static void identify_gpio(char *selection) {
+	char *end;
+	long int values[] = { 0, 1, 2, 3, 4, 5, 6, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 37, 43, 44, 45, 46 };
+	long int val = strtol(selection, &end, 10);
+	rs485dirgpio = -1;
+	for (size_t i = 0; i < sizeof(values); i++)
+		if (val == values[i])
+		{
+			rs485dirgpio = (int)val;
+			break;
+		}
+}
+
 static void check_args(int argc, char *argv[]) {
 	static struct option long_options[] = {
 		{"device", required_argument, NULL, 'd'},
@@ -80,6 +94,7 @@ static void check_args(int argc, char *argv[]) {
 		{"version", no_argument, NULL, 'v'},
 		{"help", no_argument, NULL, 'h'},
 		{"enterbootloader", no_argument, &bootloader_check, 'b'},
+		{"gpio", optional_argument, &rs485dirgpio, 'g'},
 		{0, 0, 0, 0}
 	};
 
@@ -87,7 +102,7 @@ static void check_args(int argc, char *argv[]) {
 	int c;
 
 	for (;;) {
-		c = getopt_long(argc, argv, "d:s:vhb", long_options, &option_index);
+		c = getopt_long(argc, argv, "d:s:vhbg:", long_options, &option_index);
 
 		if (c == -1)
 			break;
@@ -109,6 +124,9 @@ static void check_args(int argc, char *argv[]) {
 				break;
 			case 'b':
 				bootloader_check = 1;
+				break;
+			case 'g':
+				identify_gpio(optarg);
 				break;
 		}
 	}
@@ -153,7 +171,7 @@ int main(int argc, char *argv[]) {
 	if (!bootloader_check && deviceId == DEVICE_ALL)
 		deviceId = DEVICE_TAG_READER_ROUTER;
 
-	ALOGI("lrffp Device chosen: %s\n", deviceNames[deviceId]);
+	ALOGI("lrffp Device chosen: %s%s\n", deviceNames[deviceId], ((rs485dirgpio > -1)? " RS485": ""));
 
 	check_stream_file(argc, argv, fdStream);
 
@@ -182,6 +200,7 @@ int main(int argc, char *argv[]) {
 			dev->setType(deviceId);
 			dev->setSpeed(deviceSpeed);
 			dev->setFirmwareType(telit_firmware);
+			dev->setRS485GPIO(rs485dirgpio);
 
 			if (verbose_flag)
 				set_log_level(LOG_LEVEL_VERBOSE);
@@ -218,6 +237,7 @@ int main(int argc, char *argv[]) {
 		dev->setType(deviceId);
 		dev->setSpeed(deviceSpeed);
 		dev->setFirmwareType(telit_firmware);
+		dev->setRS485GPIO(rs485dirgpio);
 
 		if (verbose_flag)
 			set_log_level(LOG_LEVEL_VERBOSE);

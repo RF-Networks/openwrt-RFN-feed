@@ -1,11 +1,11 @@
 #ifndef LRFFP_H_
 #define LRFFP_H_
 
-#define PACKAGE_STRING "lrffp 1.00.01"
+#define PACKAGE_STRING "lrffp 1.00.02"
 
 #define VERSION_MSG \
     PACKAGE_STRING "\n" \
-    "Copyright (C) 2016 RF Networks\n" \
+    "Copyright (C) 2017 RF Networks\n" \
     "All rights reserved.\n\n"
 
 #define HELP_MSG \
@@ -22,6 +22,7 @@
     "\t 1 - 19200\n" \
     "\t 2 - 115200\n" \
     "--enterbootloader, -b: enter device to bootloader mode\n" \
+	"--gpio, -g: RS485 direction GPIO\n"
 
 #define DEVICE_ALL_SELECTION		            '0'
 #define DEVICE_TAG_READER_ROUTER_SELECTION      '1'

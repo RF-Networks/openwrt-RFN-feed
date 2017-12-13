@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include "log.h"
+#include "GPIO.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ class Device;
 class Uploader {
 	friend class Device;
 protected:
+	GPIO *rs485dir;
 	ifstream fdStream;
 	int err;
 	uint8_t data[0xFFFF];

@@ -1,15 +1,18 @@
 #include <unistd.h>
+#include <termios.h>
 #include "Device.h"
 #include "lrffp.h"
 #include "Uploader.h"
 #include "lrffpError.h"
 
-Uploader::Uploader() : err(E_SUCCESS), max_address(0) {
+Uploader::Uploader() : rs485dir(nullptr), err(E_SUCCESS), max_address(0) {
 
 }
 
 Uploader::~Uploader() {
-
+	if (rs485dir != nullptr)
+		rs485dir->~GPIO();
+	rs485dir = nullptr;
 }
 
 bool Uploader::initializeStream(ifstream &stream) {
@@ -68,7 +71,16 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 		ALOGD("Device is in flashing mode.\n");
 	}
 	ALOGD("Erasing memory...\n");
-	if (!eraseMemory(device)) {
+	retry = 0;
+	while (retry < 3) {
+		if (!eraseMemory(device)) {
+			err = E_CANT_ERASE_FLASH;
+		} else {
+			err = E_SUCCESS;
+			break;
+		}
+	}
+	if (retry > 2 || err == E_CANT_ERASE_FLASH) {
 		err = E_CANT_ERASE_FLASH;
 		return false;
 	}
@@ -88,7 +100,16 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 
 	if (!device->getFirmwareType()) {
 		ALOGD("Comparing CRC...\n");
-		if (!compareCRC(device, pointer)) {
+		retry = 0;
+		while (retry < 3) {
+			if (!compareCRC(device, pointer)) {
+				err = E_CRC_COMPARE_FAILURE;
+			} else {
+				err = E_SUCCESS;
+				break;
+			}
+		}
+		if (retry > 2 || err == E_CRC_COMPARE_FAILURE) {
 			err = E_CRC_COMPARE_FAILURE;
 			return false;
 		}
@@ -96,7 +117,16 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 	}
 
 	ALOGD("Exiting flashing mode...\n");
-	if (!exitFlashingMode(device)) {
+	retry = 0;
+	while (retry < 3) {
+		if (!exitFlashingMode(device)) {
+			err = E_CANT_EXIT_FLASH;
+		} else {
+			err = E_SUCCESS;
+			break;
+		}
+	}
+	if (retry > 2 || err == E_CANT_EXIT_FLASH) {
 		err = E_CANT_EXIT_FLASH;
 		return false;
 	}
@@ -151,12 +181,13 @@ bool Uploader::sendFirmwareChunk(Device* device, ssize_t offset) {
 			tmp[i] = 0xFF;
 	}
 	retry = 0;
-	while (retry < 3) {
+	while (retry < ((rs485dir != nullptr)? 6 : 3)) {
 		res = sendFlashCommand(device, tmp, 270);
-		if (res)
+		if (res) {
 			return true;
+		}
 		retry++;
-		usleep(100);
+		usleep(1000);
 	}
 	return false;
 }
@@ -205,14 +236,31 @@ bool Uploader::sendFlashCommand(Device* device, uint8_t *data, ssize_t size) {
 	uint32_t delay = BYTES_IN_BUFFER_DELAY;
 	uint8_t tmp[512];
 	int fd = device->getFileDescriptor();
+
 	tcflush(fd, TCIOFLUSH);
 
+
+	if (rs485dir != nullptr) {
+		//delay *= 5;
+		rs485dir->Value(1);
+		usleep(20);
+	}
 	do {
+
 		written_bytes  = write(fd, data, size);
-		if (written_bytes < 0)
+		if (written_bytes < 0) {
+			if (rs485dir != nullptr) {
+				tcdrain(fd);
+				rs485dir->Value(0);
+			}
 			return false;
+		}
 		bytes += written_bytes;
 	} while (bytes < size);
+	if (rs485dir != nullptr) {
+		tcdrain(fd);
+		rs485dir->Value(0);
+	}
 	// All bytes written, get reply
 
 	do {
@@ -221,6 +269,7 @@ bool Uploader::sendFlashCommand(Device* device, uint8_t *data, ssize_t size) {
 	} while (bytesAvailable < 12 && delay);
 
 	if (bytesAvailable > 11) {
+		//memset(tmp, 0, 512);
 		read(fd, tmp, 512);
 		return (!tmp[11]);
 	}
