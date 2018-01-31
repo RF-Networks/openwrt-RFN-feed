@@ -79,6 +79,7 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 			err = E_SUCCESS;
 			break;
 		}
+		retry++;
 	}
 	if (retry > 2 || err == E_CANT_ERASE_FLASH) {
 		err = E_CANT_ERASE_FLASH;
@@ -89,12 +90,22 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 	ALOGD("Flashing firmware %d bytes...\n", max_address);
 	while (pointer <= max_address) {
 		ALOGD("Flashing offset 0x%04X...\n", pointer);
-		if (!sendFirmwareChunk(device, pointer)) {
+		retry = 0;
+		err = E_SUCCESS;
+		while (retry < 3) {
+			if (!sendFirmwareChunk(device, pointer)) {
+				err = E_CANT_FLASH_CHUNK;
+			} else {
+				err = E_SUCCESS;
+				break;
+			}
+			retry++;
+		}
+		if (retry > 2 || err == E_CANT_FLASH_CHUNK) {
 			err = E_CANT_FLASH_CHUNK;
 			return false;
-		} else {
-			 pointer += 256;
 		}
+		pointer += 256;
 	}
 	ALOGD("Firmware flashed %d bytes.\n", pointer);
 
@@ -108,6 +119,7 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 				err = E_SUCCESS;
 				break;
 			}
+			retry++;
 		}
 		if (retry > 2 || err == E_CRC_COMPARE_FAILURE) {
 			err = E_CRC_COMPARE_FAILURE;
@@ -118,6 +130,7 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 
 	ALOGD("Exiting flashing mode...\n");
 	retry = 0;
+	err = E_SUCCESS;
 	while (retry < 3) {
 		if (!exitFlashingMode(device)) {
 			err = E_CANT_EXIT_FLASH;
@@ -125,6 +138,7 @@ bool Uploader::uploadStream(Device* device, bool enterflashMode) {
 			err = E_SUCCESS;
 			break;
 		}
+		retry++;
 	}
 	if (retry > 2 || err == E_CANT_EXIT_FLASH) {
 		err = E_CANT_EXIT_FLASH;
@@ -187,7 +201,7 @@ bool Uploader::sendFirmwareChunk(Device* device, ssize_t offset) {
 			return true;
 		}
 		retry++;
-		usleep(1000);
+		usleep(10000);
 	}
 	return false;
 }
