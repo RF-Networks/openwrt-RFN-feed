@@ -19,7 +19,7 @@
 using namespace std;
 
 #define PORT_OPEN_DELAY (100 * 1000)
-#define BYTES_IN_BUFFER_DELAY 1000000
+#define BYTES_IN_BUFFER_DELAY 2000000
 
 class Device {
 protected:

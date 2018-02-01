@@ -5,7 +5,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=RFN-lrffp
-PKG_RELEASE:=1.00.03
+PKG_RELEASE:=1.00.04
 
 include $(INCLUDE_DIR)/package.mk
 

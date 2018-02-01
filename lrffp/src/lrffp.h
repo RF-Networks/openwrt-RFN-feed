@@ -1,7 +1,7 @@
 #ifndef LRFFP_H_
 #define LRFFP_H_
 
-#define PACKAGE_STRING "lrffp 1.00.03"
+#define PACKAGE_STRING "lrffp 1.00.04"
 
 #define VERSION_MSG \
     PACKAGE_STRING "\n" \
