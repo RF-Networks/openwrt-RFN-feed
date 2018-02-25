@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rfn-tag-receiver
-PKG_VERSION:=2017-12-18
-PKG_RELEASE=1.0.21
+PKG_VERSION:=2018-02-25
+PKG_RELEASE=1.0.22
 
 include $(INCLUDE_DIR)/package.mk
 
