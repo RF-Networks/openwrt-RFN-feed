@@ -149,7 +149,7 @@ static void check_stream_file(int argc, char *argv[], ifstream &fileStream)
 	telit_firmware = !fn.compare("tlt");
     fileStream.open(argv[optind++], ios::in);
 
-    if (fileStream < 0) {
+    if (!fileStream.is_open()) {
         ALOGE("lrffp check_stream_file Error opening the stream\n");
         exit(EXIT_FAILURE);
     }
