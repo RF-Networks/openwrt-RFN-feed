@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <error>
+#include <error.h>
 #include "log.h"
 #include <cstdlib>
 #include <cstring>
