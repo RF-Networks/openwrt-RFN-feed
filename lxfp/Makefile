@@ -27,7 +27,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/lxfp
   TITLE:=Telit lxfp tool
-  DEPENDS:=@TARGET_ramips_mt7688_LinkIt7688 \
+  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
 		+libpthread +libstdcpp
 
   CATEGORY:=RFN
