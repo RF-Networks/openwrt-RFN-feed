@@ -23,7 +23,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/mtk-linkit
   TITLE:=MTK LinkIt Smart board support package
-  #HIDDEN:=0
+  HIDDEN:=0
   DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
 	+tcpdump-mini
   CATEGORY:=Base system
