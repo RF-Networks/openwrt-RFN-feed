@@ -1,6 +1,6 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
-
+#+rfn-mtk-linkit-webui +mtk-sdk-wifi +kmod-sound-mtk @TARGET_ramips_mt76x8_LinkIt7688
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mtk-linkit
@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mtk-linkit
   TITLE:=MTK LinkIt Smart board support package
   HIDDEN:=0
-  DEPENDS:=@TARGET_ramips_mt76x8_LinkIt7688 \
+  DEPENDS:= \
   	+gdbserver +curl +strace +coreutils +coreutils-stty \
   	+avahi-nodbus-daemon +mjpg-streamer \
 	+uhttpd +rpcd +rpcd-mod-iwinfo +git +git-http +samba36-server \
@@ -26,7 +26,7 @@ define Package/mtk-linkit
 	+kmod-video-core +kmod-video-uvc \
 	+kmod-sound-core +madplay-alsa +alsa-utils \
 	+tcpdump-mini
-#+rfn-mtk-linkit-webui +mtk-sdk-wifi +kmod-sound-mtk 
+
   CATEGORY:=Base system
   DEFAULT:=y
 endef
