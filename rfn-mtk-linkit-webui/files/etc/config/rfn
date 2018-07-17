@@ -1,4 +1,0 @@
-config server 'server'
-	option serverIP '80.178.98.197'
-	option serverPort '4009'
-	option channel '0'
