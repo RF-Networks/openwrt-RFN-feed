@@ -13,7 +13,7 @@ define Package/mtk-linkit
   HIDDEN:=1
   DEPENDS:=@TARGET_ramips_mt7688_LinkIt7688 \
   	+gdbserver +curl +strace +coreutils +coreutils-stty \
-  	+avahi-nodbus-daemon +mountd +mjpg-streamer \
+  	+avahi-nodbus-daemon +mjpg-streamer \
 	+uhttpd +rpcd +rpcd-mod-iwinfo +git +git-http +samba36-server \
 	+python +python-pyserial +python-pip +hidapi \
 	+libmraa +libupm +node +node-hid +node-cylon-firmata +yunbridge \
@@ -24,9 +24,9 @@ define Package/mtk-linkit
 	+kmod-nls-iso8859-15 +kmod-nls-iso8859-2 +kmod-nls-utf8 \
 	+kmod-sdhci-mt7620 +kmod-usb-storage \
 	+kmod-video-core +kmod-video-uvc \
-	+kmod-sound-core +kmod-sound-mtk +madplay-alsa +alsa-utils \
-	+rfn-mtk-linkit-webui +mtk-sdk-wifi +tcpdump-mini
-
+	+kmod-sound-core +madplay-alsa +alsa-utils \
+	+tcpdump-mini
+#+rfn-mtk-linkit-webui +mtk-sdk-wifi +kmod-sound-mtk 
   CATEGORY:=Base system
   DEFAULT:=y
 endef
