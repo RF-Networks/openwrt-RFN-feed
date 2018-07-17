@@ -14,6 +14,7 @@
 #	+kmod-sdhci-mt7620 +kmod-usb-storage \
 #	+kmod-video-core +kmod-video-uvc \
 #	+kmod-sound-core +madplay-alsa +alsa-utils \
+#
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mtk-linkit
