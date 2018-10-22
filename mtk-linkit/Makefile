@@ -26,7 +26,16 @@ define Package/mtk-linkit
   TITLE:=MTK LinkIt Smart board support package
   HIDDEN:=0
   DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
-	+tcpdump-mini
+    +gdbserver +curl +strace +coreutils +coreutils-stty \
+    +mountd \
+    +uhttpd +rpcd +rpcd-mod-iwinfo +git +git-http +samba36-server \
+    +python +python-pyserial +python-pip +hidapi \
+	+node +node-hid +node-cylon-firmata \
+    +luci +luci-app-samba +luci-lib-json \
+    +kmod-fs-vfat +kmod-fs-exfat +kmod-i2c-core \
+    +kmod-nls \
+    +kmod-sdhci-mt7620 +kmod-usb-storage \
+    +tcpdump-mini
   CATEGORY:=Base system
   DEFAULT:=y
 endef
