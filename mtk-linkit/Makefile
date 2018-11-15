@@ -31,6 +31,7 @@ define Package/mtk-linkit
     +python +python-pyserial +python-pip +hidapi \
 	+node +node-hid +node-cylon-firmata \
     +luci +luci-app-samba +luci-lib-json \
+    +rpcd-mod-rpcsys +cgi-io +uboot-envtools \
     +kmod-fs-vfat +kmod-fs-exfat +kmod-i2c-core \
     +kmod-nls-base \
     +kmod-sdhci-mt7620 +kmod-usb-storage \
