@@ -32,7 +32,7 @@ define Package/mtk-linkit
     +node +node-hid +node-cylon-firmata +yunbridge \
     +luci +luci-theme-openwrt +luci-app-samba +luci-lib-json \
     +rpcd-mod-rpcsys +cgi-io +uboot-envtools \
-    +kmod-fs-vfat +kmod-fs-exfat +kmod-i2c-core +kmod-i2c-ralink \
+    +kmod-fs-vfat +kmod-fs-exfat +kmod-i2c-core +kmod-i2c-mt7628 \
     +kmod-nls-base +kmod-nls-cp437 +kmod-nls-iso8859-1 \
     +kmod-nls-iso8859-15 +kmod-nls-iso8859-2 +kmod-nls-utf8 \
     +kmod-sdhci-mt7620 +kmod-usb-storage \
