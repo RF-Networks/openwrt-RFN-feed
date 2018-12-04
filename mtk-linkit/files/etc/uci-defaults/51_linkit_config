@@ -11,7 +11,8 @@ BAUDRATE=`uci get yunbridge.config.baudrate`
 	uci commit yunbridge
 }
 
-
+uci delete uhttpd.main.alias
+uci commit uhttpd
 
 [ "$(uci get system.@system[-1].linkit_firstboot)" = "1" ] && return 0
 
