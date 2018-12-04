@@ -30,7 +30,7 @@ define Package/mtk-linkit
     +avahi-nodbus-daemon +blockd \
     +uhttpd +rpcd +rpcd-mod-iwinfo +git +git-http +samba36-server \
     +python +python-pyserial +python-pip +hidapi \
-    +node +node-hid +node-cylon-firmata +yunbridge \
+    +node +node-hid +node-cylon-firmata \
     +luci +luci-theme-openwrt +luci-app-samba +luci-lib-json \
     +rpcd-mod-rpcsys +cgi-io +avrdude +spi-tools +uboot-envtools \
     +kmod-fs-vfat +kmod-fs-exfat +kmod-i2c-core +kmod-i2c-mt7628 \
