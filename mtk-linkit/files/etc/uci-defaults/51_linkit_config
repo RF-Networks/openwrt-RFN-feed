@@ -19,7 +19,7 @@ uci commit uhttpd
 . /lib/ramips.sh
 board=$(ramips_board_name)
 
-[ "$board" = "linkits7688d" ] || rm /etc/avahi/services/arduino.service
+#[ "$board" = "linkits7688d" ] || rm /etc/avahi/services/arduino.service
 
 
 uci set system.@system[-1].hostname="mylinkit"
