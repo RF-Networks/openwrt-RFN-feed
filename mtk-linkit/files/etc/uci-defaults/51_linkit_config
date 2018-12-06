@@ -28,7 +28,7 @@ uci	set wireless.ap.encryption=none
 			
 uci	set wireless.sta=wifi-iface
 uci	set wireless.sta.device=radio${devidx}
-uci	set wireless.sta.network=wwan
+uci	set wireless.sta.network=wan
 uci	set wireless.sta.mode=sta
 uci	set wireless.sta.ssid=RFN
 uci	set wireless.sta.encryption=none
