@@ -1,0 +1,28 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+# Enable RTC clock
+echo ds1370 0x68 > /sys/bus/i2c/devices/i2c-0/new_device
+sleep 1
+hwclock -s
+
+# Restart Telit modem
+echo 14 > /sys/class/gpio/export
+echo 16 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio14/direction
+echo out > /sys/class/gpio/gpio16/direction
+
+# Turn modem off
+echo 1 >  /sys/class/gpio/gpio16/value
+sleep 5
+
+# Turn modem on
+echo 0 >  /sys/class/gpio/gpio16/value
+echo 1 >  /sys/class/gpio/gpio14/value
+sleep 10
+echo 0 >  /sys/class/gpio/gpio14/value
+
+echo 14 > /sys/class/gpio/unexport
+echo 16 > /sys/class/gpio/unexport
+
+exit 0
