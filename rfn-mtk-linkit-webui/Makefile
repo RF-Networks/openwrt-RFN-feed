@@ -20,7 +20,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/rfn-mtk-linkit-webui
   TITLE:=LinkIt Smart 7688 Webui
-  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 base-files
+  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 +base-files
   CATEGORY:=RFN
   HIDDEN:=1
   DEFAULT:=y
