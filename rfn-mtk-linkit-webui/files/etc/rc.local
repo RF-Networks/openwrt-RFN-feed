@@ -2,7 +2,7 @@
 # the system init finished. By default this file does nothing.
 
 # Enable RTC clock
-echo ds1370 0x68 > /sys/bus/i2c/devices/i2c-0/new_device
+echo ds1307 0x68 > /sys/bus/i2c/devices/i2c-0/new_device
 sleep 1
 hwclock -s
 
