@@ -1,0 +1,111 @@
+#!/bin/sh
+
+sleep 1
+
+case $1 in
+apsta)
+	uci set network.lan.type=bridge
+	uci set network.lan.netmask=255.255.255.0
+	uci set network.lan.ipassign=60
+	uci set network.lan.ipaddr=192.168.100.1
+	uci set network.lan.proto=static
+	uci set dhcp.lan.ignore=0
+	uci set dhcp.wan.ignore=1
+	uci delete network.wan.type
+	uci delete network.wan.netmask
+	uci delete network.wan.ip6assign
+	uci delete network.wan.ipaddr
+	uci set network.wan.proto=dhcp
+
+	uci delete firewall.@zone[0].masq
+	uci delete firewall.@zone[0].mtu_fix
+	uci set firewall.@zone[1].masq=1
+	uci set firewall.@zone[1].mtu_fix=1
+
+	uci set wireless.sta.disabled=0
+
+	uci set wireless.ap.disabled=0
+	uci set wireless.ap.network='lan'
+	uci commit
+	/etc/init.d/network restart
+	;;
+sta)
+	uci set network.lan.type=bridge
+	uci set network.lan.netmask=255.255.255.0
+	uci set network.lan.ipassign=60
+	uci set network.lan.ipaddr=192.168.100.1
+	uci set network.lan.proto=static
+	uci set dhcp.lan.ignore=0
+	uci set dhcp.wan.ignore=1
+	uci delete network.wan.type
+	uci delete network.wan.netmask
+	uci delete network.wan.ip6assign
+	uci delete network.wan.ipaddr
+	uci set network.wan.proto=dhcp
+
+	uci delete firewall.@zone[0].masq
+	uci delete firewall.@zone[0].mtu_fix
+	uci set firewall.@zone[1].masq=1
+	uci set firewall.@zone[1].mtu_fix=1
+
+	uci set wireless.sta.disabled=0
+
+	uci set wireless.ap.disabled=1
+	uci set wireless.ap.network='lan'
+	uci commit
+	/etc/init.d/network restart
+	;;
+ap)
+	uci set network.lan.type=bridge
+	uci set network.lan.netmask=255.255.255.0
+	uci set network.lan.ip6assign=60
+	uci set network.lan.ipaddr=192.168.100.1
+	uci set network.lan.proto=static
+	uci set dhcp.lan.ignore=0
+	uci set dhcp.wan.ignore=1
+	uci delete network.wan.type
+	uci delete network.wan.netmask
+	uci delete network.wan.ip6assign
+	uci delete network.wan.ipaddr
+	uci set network.wan.proto=dhcp
+
+	uci delete firewall.@zone[0].masq
+	uci delete firewall.@zone[0].mtu_fix
+	uci set firewall.@zone[1].masq=1
+	uci set firewall.@zone[1].mtu_fix=1
+
+	uci set wireless.sta.disabled=1
+
+	uci set wireless.ap.disabled=0
+	uci set wireless.ap.network='lan'
+	uci commit
+	/etc/init.d/network restart
+	;;
+lancli)
+	uci set network.lan.proto=dhcp
+	uci delete network.lan.type
+	uci delete network.lan.netmask
+	uci delete network.lan.ip6assign
+	uci delete network.lan.ipaddr
+
+	uci set network.wan.ifname=wlan0
+	uci set network.wan.netmask=255.255.255.0
+	uci set network.wan.ip6assign=64
+	uci set network.wan.ipaddr=192.168.100.1
+	uci set network.wan.proto=static
+	uci set dhcp.wan.ignore=0
+	uci set dhcp.lan.ignore=1
+
+	uci delete firewall.@zone[1].masq
+	uci delete firewall.@zone[1].mtu_fix
+	uci set firewall.@zone[0].masq=1
+	uci set firewall.@zone[0].mtu_fix=1
+
+	uci set wireless.sta.disabled=1
+
+	uci set wireless.ap.disabled=0
+	uci set wireless.ap.network='lan wan'
+	uci commit
+	/etc/init.d/network restart
+	;;
+esac
