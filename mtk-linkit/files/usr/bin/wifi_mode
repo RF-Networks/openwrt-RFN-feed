@@ -27,7 +27,9 @@ apsta)
 	uci set wireless.ap.disabled=0
 	uci set wireless.ap.network='lan'
 	uci commit
-	/etc/init.d/network restart
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
 	;;
 sta)
 	uci set network.lan.type=bridge
@@ -53,7 +55,9 @@ sta)
 	uci set wireless.ap.disabled=1
 	uci set wireless.ap.network='lan'
 	uci commit
-	/etc/init.d/network restart
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
 	;;
 ap)
 	uci set network.lan.type=bridge
@@ -79,7 +83,9 @@ ap)
 	uci set wireless.ap.disabled=0
 	uci set wireless.ap.network='lan'
 	uci commit
-	/etc/init.d/network restart
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
 	;;
 lancli)
 	uci set network.lan.proto=dhcp
@@ -106,6 +112,8 @@ lancli)
 	uci set wireless.ap.disabled=0
 	uci set wireless.ap.network='lan wan'
 	uci commit
-	/etc/init.d/network restart
+    if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
 	;;
 esac
