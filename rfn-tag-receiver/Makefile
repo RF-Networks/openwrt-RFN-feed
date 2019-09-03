@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 John Crispin <blogic@openwrt.org>
+# Copyright (C) 2019 RF-Networks Ltd.
 #
 # This is free software, licensed under the GPL 2 license.
 #
@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rfn-tag-receiver
-PKG_VERSION:=2019-04-30
-PKG_RELEASE=1.0.27
+PKG_VERSION:=2019-09-03
+PKG_RELEASE=1.0.28
 
 include $(INCLUDE_DIR)/package.mk
 
