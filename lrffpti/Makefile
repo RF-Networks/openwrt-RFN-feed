@@ -23,7 +23,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Device.cpp src/DeviceFactory.cpp src/Uploader.cpp src/log.cpp src/lrffpti.cpp src/GPIO.cpp -o $(PKG_BUILD_DIR)/lrffpti
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Device.cpp src/DeviceFactory.cpp src/Uploader.cpp src/log.cpp src/lrffpti.cpp src/GPIO.cpp -o $(PKG_BUILD_DIR)/lrffpti -lz -lubox
 endef
 
 define Package/RFN-lrffpti/install
