@@ -12,7 +12,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/RFN-lrffpti
   TITLE:=RFN lrffpti
   DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
-		+libpthread +libstdcpp
+		+libpthread +libstdcpp +zlib +libubox
 
   CATEGORY:=RFN
   DEFAULT:=y
