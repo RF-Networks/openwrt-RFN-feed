@@ -28,7 +28,7 @@ endef
 
 define Package/RFN-lrffpti/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lrffp $(1)/usr/bin/lrffpti
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lrffpti $(1)/usr/bin/lrffpti
 endef
 
 $(eval $(call BuildPackage,RFN-lrffpti))
