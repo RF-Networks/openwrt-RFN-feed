@@ -50,7 +50,8 @@
     "\t 2 - RFN-Star\n" \
 	"--speed, -s: choose serial port speed\n" \
     "\t 1 - 19200\n" \
-    "\t 2 - 115200\n" \
+    "\t 2 - 57600\n" \
+    "\t 3 - 115200\n" \
     "--enterbootloader, -b: enter device to bootloader mode\n" \
 	"--gpio, -g: RS485 direction GPIO\n"
 
