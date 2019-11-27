@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LRFFPTI_H_
-#define LRFFPTI_H_
+#ifndef SRC_LRFFPTI_H_
+#define SRC_LRFFPTI_H_
 
-#define PACKAGE_STRING "lrffpti 1.00.00"
+#define PACKAGE_STRING "lrffpti 1.00.01"
 
 #define VERSION_MSG \
     PACKAGE_STRING "\n" \
@@ -52,24 +52,18 @@
     "\t 1 - 19200\n" \
     "\t 2 - 57600\n" \
     "\t 3 - 115200\n" \
-    "--enterbootloader, -b: enter device to bootloader mode\n" \
-	"--gpio, -g: RS485 direction GPIO\n"
+    "--enterbootloader, -b: enter device to bootloader mode\n"
 
-#define DEVICE_ALL_SELECTION		            '0'
+#define DEVICE_ALL_SELECTION					'0'
 #define DEVICE_RFN_MESH_SELECTION		        '1'
 #define DEVICE_RFN_STAR_SELECTION		        '2'
 
-#define DEVICE_ALL							     0
-#define DEVICE_RFN_MESH					         1
-#define DEVICE_RFN_STAR					         2
+#define DEVICE_ALL								0
+#define DEVICE_RFN_MESH							1
+#define DEVICE_RFN_STAR							2
 
-#define DEVICE_SPEED_SELECTION_19200            '1'
-#define DEVICE_SPEED_SELECTION_57600	        '2'
-#define DEVICE_SPEED_SELECTION_115200           '3'
+#define DEVICE_SPEED_SELECTION_19200			'1'
+#define DEVICE_SPEED_SELECTION_57600			'2'
+#define DEVICE_SPEED_SELECTION_115200			'3'
 
-#define DEVICE_SPEED_19200     					 1
-#define DEVICE_SPEED_57600	     				 2
-#define DEVICE_SPEED_115200     				 3
-
-#endif /* LRFFPTI_H_ */
-
+#endif /* SRC_LRFFPTI_H_ */

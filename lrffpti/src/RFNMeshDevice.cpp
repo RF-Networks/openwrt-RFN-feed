@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,49 +29,28 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GPIO_H_
-#define GPIO_H_
+#include <thread>
+#include <chrono>
+#include "RFNMeshDevice.h"
 
-#include <string>
-#include <fstream>
-#include <iostream>
+RFNMeshDevice::RFNMeshDevice(Uploader* uploader) : Device(uploader) {
 
-using std::string;
-using std::fstream;
+}
 
-enum GPIODirection {
-	GPIO_IN = 0, GPIO_OUT = 1
-};
+RFNMeshDevice::~RFNMeshDevice() {
 
-enum GPIOValue {
-	GPIO_LOW = 0, GPIO_HIGH = 1
-};
+}
 
-class GPIO {
-public:
-	explicit GPIO(int id);
-	~GPIO();
+bool RFNMeshDevice::enterBootMode() {
+	uint8_t reply[16];
+	uint8_t enterBootloaderCmd[] = { 0xAB, 0x96, 0x01, 0x0A, 0x12, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xCB, 0x00, 0x00, 0x00, 0x08, 0x7A, 0xCD };
+	memset(reply, 0, sizeof(reply));
+	ALOGW("lrffpti enterBootMode Please wait...\n");
+	memset(reply, 0, sizeof(reply));
+	if (!sendSerialCommand(enterBootloaderCmd, sizeof(enterBootloaderCmd), reply, sizeof(reply))) {
+		return false;
+	}
+	//  AB 96 01 07 13 12 FF FF FF FF 00 00 00 16 7E CD - Reply example
+	return (reply[0] == 0xAB && reply[15] == 0xCD && reply[3] == 0x07 && reply[4] == 0x13 && reply[10] == 0x00 && reply[11] == 0x00 && reply[12] == 0x00);
+}
 
-	int Value();
-	void Value(int value);
-	int Direction();
-	void Direction(int value);
-
-private:
-	int id_;
-
-	fstream value_;
-	fstream direction_;
-
-	bool Exists();
-	void Export();
-	void Unexport();
-
-	static const string PATH_EXPORT;
-	static const string PATH_UNEXPORT;
-	static const string PREFIX;
-	static const string POSTFIX_VALUE;
-	static const string POSTFIX_DIRECTION;
-};
-
-#endif /* GPIO_H_ */

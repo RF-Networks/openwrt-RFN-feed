@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,79 +29,50 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
+#ifndef SRC_DEVICE_H_
+#define SRC_DEVICE_H_
 
-#include <iostream>
 #include <fstream>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <stdint.h>
-
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <termios.h>
+#include <libserial/SerialStream.h>
 #include "Uploader.h"
 #include "log.h"
-#include "lrffpError.h"
 
 using namespace std;
-
-#define PORT_OPEN_DELAY (100 * 1000)
-#define BYTES_IN_BUFFER_DELAY 2000000
+using LibSerial::SerialStream;
 
 class Device {
 protected:
 	Uploader* uploader;
+	SerialStream serial;
 	int type;
-	int fd_device;
-	int counter;
-	int err;
-	int speed;
-	int maxRetry;
+	LibSerial::BaudRate speed;
 	bool is_hex;
+
+	bool sendSerialCommand(uint8_t *data, ssize_t size, uint8_t *reply = nullptr, uint8_t reply_size = 0);
 public:
-	Device(Uploader* uploader) :
-		uploader(uploader) ,
-				type(1),
-				fd_device(-1),
-				counter(1000),
-				err(E_SUCCESS),
-				speed(1),
-				maxRetry(3),
-				is_hex(false) {}
+	Device(Uploader* uploader);
 	virtual ~Device();
 
 	virtual bool initialize(ifstream &stream, const char* deviceName);
-	virtual bool enterBootMode();
-	virtual bool uploadStream(bool enterflashMode);
+	virtual bool enterBootMode() = 0;
+	virtual bool uploadStream();
+	virtual bool isInBootloader();
 
 	void setType(int t) {
 		type = t;
 	}
-	uint8_t getType(void) const { return type; }
-
-	void setSpeed(int s) {
+	uint8_t getType(void) const {
+		return type;
+	}
+	void setSpeed(LibSerial::BaudRate s) {
 		speed = s;
 	}
 	void setIsHex(bool ft) {
 		is_hex = ft;
 	}
-	void setRS485GPIO(int gpio) {
-		if (gpio < 0)
-			return;
-		uploader->rs485dir = new GPIO(gpio);
-		if (uploader->rs485dir != nullptr)
-			uploader->rs485dir->Direction(GPIODirection::GPIO_OUT);
-	}
-	bool getIsHex(void) const { return is_hex; }
-	int getFileDescriptor(void) const { return fd_device; }
-
 	bool openDevice(const char* deviceName);
-	bool changeBaudRate(uint8_t br);
+	bool changeBaudRate(LibSerial::BaudRate br);
+	SerialStream* getSerialStream();
 };
 
-#endif /* DEVICE_H_ */
-
+#endif /* SRC_DEVICE_H_ */

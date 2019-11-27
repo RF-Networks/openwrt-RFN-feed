@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,19 +29,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DEVICEFACTORY_H_
-#define DEVICEFACTORY_H_
-
-using namespace std;
+#ifndef SRC_DEVICEFACTORY_H_
+#define SRC_DEVICEFACTORY_H_
 
 #include "Device.h"
 
 class DeviceFactory {
 public:
-    static Device* getDevice(int deviceId);
-    static void destroyDevice(Device *dev);
+	static Device* getDevice(int deviceId);
+	static void destroyDevice(Device *dev);
 };
 
-
-#endif /* DEVICEFACTORY_H_ */
-
+#endif /* SRC_DEVICEFACTORY_H_ */

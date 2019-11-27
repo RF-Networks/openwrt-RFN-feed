@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,49 +29,19 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GPIO_H_
-#define GPIO_H_
+#ifndef SRC_LRFFPTIERROR_H_
+#define SRC_LRFFPTIERROR_H_
 
-#include <string>
-#include <fstream>
-#include <iostream>
+#define E_SUCCESS               0
+#define E_OSCALL                -1
+#define E_DEVICE_NOT_OPEN       -2
+#define E_FILE_ACCESS           -3
+#define E_CANT_ENTER_FLASH      -4
+#define E_CANT_ERASE_FLASH      -5
+#define E_CRC_COMPARE_FAILURE   -6
+#define E_CANT_FLASH_CHUNK      -7
+#define E_CANT_EXIT_FLASH       -8
+#define E_FLASHER_BOOT          -9
+#define E_GENERIC_FAILURE       -99
 
-using std::string;
-using std::fstream;
-
-enum GPIODirection {
-	GPIO_IN = 0, GPIO_OUT = 1
-};
-
-enum GPIOValue {
-	GPIO_LOW = 0, GPIO_HIGH = 1
-};
-
-class GPIO {
-public:
-	explicit GPIO(int id);
-	~GPIO();
-
-	int Value();
-	void Value(int value);
-	int Direction();
-	void Direction(int value);
-
-private:
-	int id_;
-
-	fstream value_;
-	fstream direction_;
-
-	bool Exists();
-	void Export();
-	void Unexport();
-
-	static const string PATH_EXPORT;
-	static const string PATH_UNEXPORT;
-	static const string PREFIX;
-	static const string POSTFIX_VALUE;
-	static const string POSTFIX_DIRECTION;
-};
-
-#endif /* GPIO_H_ */
+#endif /* SRC_LRFFPTIERROR_H_ */

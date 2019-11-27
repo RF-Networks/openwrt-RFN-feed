@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,23 +31,29 @@
 
 #include "DeviceFactory.h"
 #include "lrffpti.h"
+#include "RFNMeshDevice.h"
+#include "RFNStarDevice.h"
 
 Device* DeviceFactory::getDevice(int deviceId) {
-	Uploader* up;
+	Uploader* up = nullptr;
+	Device* dev = nullptr;
 	switch (deviceId) {
-		case DEVICE_RFN_MESH:
-		case DEVICE_RFN_STAR:
-			up = new Uploader();
-			return new Device(up);
-			break;
-		default:
-			return NULL;
+	case DEVICE_RFN_MESH:
+		up = new Uploader();
+		dev = new RFNMeshDevice(up);
+		break;
+	case DEVICE_RFN_STAR:
+		up = new Uploader();
+		dev = new RFNStarDevice(up);
+		break;
 	}
+	return dev;
 }
 
 void DeviceFactory::destroyDevice(Device *dev) {
-    if (NULL != dev) {
+    if (nullptr != dev) {
         delete dev;
-        dev = NULL;
+        dev = nullptr;
     }
 }
+

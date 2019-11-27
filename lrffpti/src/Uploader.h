@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UPLOADER_H_
-#define UPLOADER_H_
+#ifndef SRC_UPLOADER_H_
+#define SRC_UPLOADER_H_
 
 #include <fstream>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include "log.h"
 #include "GPIO.h"
 
-#define FIRMWARE_MAX_SIZE 	0x20000
-#define RTS_GPIO			19
+#define FIRMWARE_MAX_SIZE		0x20000
+#define RTS_GPIO				19
+#define BYTES_IN_BUFFER_DELAY	2000
 
 using namespace std;
 
@@ -57,16 +54,17 @@ protected:
 		NO_ACK = 0x00
 	};
 
-	GPIO *rs485dir;
 	GPIO *rtsdir;
 	ifstream fdStream;
 	int err;
 	uint8_t data[FIRMWARE_MAX_SIZE];
 	uint32_t data_crc;
 	unsigned int max_address;
-	bool sendFlashCommand(Device* device, uint8_t *data, ssize_t size, uint8_t *reply = nullptr, uint8_t reply_size = 2);
+
+	bool isInBootloader(Device* device);
 	bool establishCommunication(Device* device);
 	bool sendPing(Device* device);
+	bool sendFlashCommand(Device* device, uint8_t *data, ssize_t size, uint8_t *reply = nullptr, uint8_t reply_size = 2);
 	bool writeToMemory(Device* device, uint8_t *data, ssize_t size);
 	Uploader::Status getStatus(Device* device);
 	void setRTS(GPIOValue value);
@@ -80,7 +78,7 @@ public:
 	Uploader();
 	virtual ~Uploader();
 	virtual bool initializeStream(ifstream &stream, bool is_hex);
-	virtual bool uploadStream(Device* device, bool enterflashMode = true);
+	virtual bool uploadStream(Device* device);
 };
 
-#endif /* UPLOADER_H_ */
+#endif /* SRC_UPLOADER_H_ */

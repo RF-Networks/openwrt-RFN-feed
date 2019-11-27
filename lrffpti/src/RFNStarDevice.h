@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,19 +29,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LRFFPERROR_H_
-#define LRFFPERROR_H_
+#ifndef SRC_RFNSTARDEVICE_H_
+#define SRC_RFNSTARDEVICE_H_
 
-#define E_SUCCESS               0
-#define E_OSCALL                -1
-#define E_DEVICE_NOT_OPEN       -2
-#define E_FILE_ACCESS           -3
-#define E_CANT_ENTER_FLASH      -4
-#define E_CANT_ERASE_FLASH      -5
-#define E_CRC_COMPARE_FAILURE   -6
-#define E_CANT_FLASH_CHUNK      -7
-#define E_CANT_EXIT_FLASH       -8
-#define E_FLASHER_BOOT          -9
-#define E_GENERIC_FAILURE       -99
+#include "Device.h"
 
-#endif /* LRFFPERROR_H_ */
+class RFNStarDevice : public Device {
+public:
+	RFNStarDevice(Uploader* uploader);
+	virtual ~RFNStarDevice();
+
+	bool enterBootMode();
+};
+
+#endif /* SRC_RFNSTARDEVICE_H_ */

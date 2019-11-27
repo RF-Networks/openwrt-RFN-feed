@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LOG_H_
-#define LOG_H_
+#ifndef SRC_LOG_H_
+#define SRC_LOG_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <string>
 
 #define LOG_LEVEL_ERROR     0
 #define LOG_LEVEL_INFO      1
@@ -42,6 +44,7 @@ extern "C" {
 
 void set_log_level(int level);
 void dbg_print(int level, const char *fmt, ...);
+std::string array_as_hex_string(unsigned char *data, size_t data_length);
 
 #if !defined(ANDROID_CHANGES)
 #define ALOGI(format, ...) dbg_print(LOG_LEVEL_INFO, format, ## __VA_ARGS__)
@@ -54,5 +57,4 @@ void dbg_print(int level, const char *fmt, ...);
 } /* C */
 #endif
 
-#endif /* LOG_H_ */
-
+#endif /* SRC_LOG_H_ */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,49 +29,37 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GPIO_H_
-#define GPIO_H_
+#include "RFNStarDevice.h"
 
-#include <string>
-#include <fstream>
-#include <iostream>
+RFNStarDevice::RFNStarDevice(Uploader* uploader) : Device(uploader) {
 
-using std::string;
-using std::fstream;
+}
 
-enum GPIODirection {
-	GPIO_IN = 0, GPIO_OUT = 1
-};
+RFNStarDevice::~RFNStarDevice() {
 
-enum GPIOValue {
-	GPIO_LOW = 0, GPIO_HIGH = 1
-};
+}
 
-class GPIO {
-public:
-	explicit GPIO(int id);
-	~GPIO();
+bool RFNStarDevice::enterBootMode() {
+	uint8_t reply[20];
+	string enterConfigModeStr("+++");
+	string enterBootloaderStr("ATBL\r");
+	ALOGW("lrffpti enterBootMode Please wait...\n");
+	memset(reply, 0, sizeof(reply));
+	if (!sendSerialCommand((uint8_t*)enterConfigModeStr.c_str(), enterConfigModeStr.length(), reply, 3)) {
+		return false;
+	}
+	string str((const char*)reply);
+	if (str.find("OK") == string::npos)
+		return false;
 
-	int Value();
-	void Value(int value);
-	int Direction();
-	void Direction(int value);
+	memset(reply, 0, sizeof(reply));
+	if (!sendSerialCommand((uint8_t*)enterBootloaderStr.c_str(), enterBootloaderStr.length(), reply, 3)) {
+		return false;
+	}
 
-private:
-	int id_;
+	str = string((const char*)reply);
+	if (str.find("OK") == string::npos)
+		return false;
+	return true;
+}
 
-	fstream value_;
-	fstream direction_;
-
-	bool Exists();
-	void Export();
-	void Unexport();
-
-	static const string PATH_EXPORT;
-	static const string PATH_UNEXPORT;
-	static const string PREFIX;
-	static const string POSTFIX_VALUE;
-	static const string POSTFIX_DIRECTION;
-};
-
-#endif /* GPIO_H_ */

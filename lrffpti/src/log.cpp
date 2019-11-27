@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -36,33 +39,40 @@
 
 int log_level = LOG_LEVEL_INFO;
 
-void set_log_level(int level)
-{
-    log_level = level;
+void set_log_level(int level) {
+	log_level = level;
 }
 
-void dbg_print(int level, const char *fmt, ...)
+void dbg_print(int level, const char *fmt, ...) {
+	FILE *std_log;
+	const char *log_tag;
+
+	if (log_level < level)
+		return;
+
+	if (LOG_LEVEL_ERROR == level) {
+		std_log = stderr;
+		log_tag = "ERROR: ";
+	} else if (LOG_LEVEL_INFO == level) {
+		std_log = stdout;
+		log_tag = "";
+	} else {
+		std_log = stdout;
+		log_tag = "DBG: ";
+	}
+
+	fprintf(std_log, "%s", log_tag);
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(std_log, fmt, args);
+	va_end(args);
+}
+
+std::string array_as_hex_string(unsigned char *data, size_t data_length)
 {
-    FILE *std_log;
-    const char *log_tag;
-
-    if (log_level < level)
-        return;
-
-    if (LOG_LEVEL_ERROR == level) {
-        std_log = stderr;
-        log_tag = "ERROR: ";
-    } else if (LOG_LEVEL_INFO == level) {
-        std_log = stdout;
-        log_tag = "";
-    } else {
-        std_log = stdout;
-        log_tag = "DBG: ";
-    }
-
-    fprintf(std_log, "%s", log_tag);
-    va_list args;
-    va_start(args, fmt);
-    vfprintf(std_log, fmt, args);
-    va_end(args);
+	std::stringstream ret("");
+	for (size_t i = 0; i < data_length; i++)
+		ret << std::setfill('0') << std::setw(2) << std::hex
+				<< std::uppercase << (int)data[i] << std::dec << " ";
+	return ret.str();
 }

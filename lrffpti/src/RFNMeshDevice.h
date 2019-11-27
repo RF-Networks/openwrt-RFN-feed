@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, RF Networks Ltd.
+ * Copyright (c) 2019, RF Networks Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,49 +29,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GPIO_H_
-#define GPIO_H_
+#ifndef SRC_RFNMESHDEVICE_H_
+#define SRC_RFNMESHDEVICE_H_
 
-#include <string>
-#include <fstream>
-#include <iostream>
+#include "Device.h"
 
-using std::string;
-using std::fstream;
-
-enum GPIODirection {
-	GPIO_IN = 0, GPIO_OUT = 1
-};
-
-enum GPIOValue {
-	GPIO_LOW = 0, GPIO_HIGH = 1
-};
-
-class GPIO {
+class RFNMeshDevice : public Device {
 public:
-	explicit GPIO(int id);
-	~GPIO();
+	RFNMeshDevice(Uploader* uploader);
+	virtual ~RFNMeshDevice();
 
-	int Value();
-	void Value(int value);
-	int Direction();
-	void Direction(int value);
-
-private:
-	int id_;
-
-	fstream value_;
-	fstream direction_;
-
-	bool Exists();
-	void Export();
-	void Unexport();
-
-	static const string PATH_EXPORT;
-	static const string PATH_UNEXPORT;
-	static const string PREFIX;
-	static const string POSTFIX_VALUE;
-	static const string POSTFIX_DIRECTION;
+	bool enterBootMode();
 };
 
-#endif /* GPIO_H_ */
+#endif /* SRC_RFNMESHDEVICE_H_ */
