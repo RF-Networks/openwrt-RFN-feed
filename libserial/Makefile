@@ -28,7 +28,7 @@ define Package/libserial
   TITLE:=Serial port library
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libstdcpp +boost-test
+  DEPENDS:=+libstdcpp +boost-system +boost-timer +boost-test
   DEFAULT:=y
 endef
 
