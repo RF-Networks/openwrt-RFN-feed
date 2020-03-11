@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rfn-mtk-linkit-webui
-PKG_VERSION:=2019-08-13
+PKG_VERSION:=2020-01-26
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/RF-Networks/RFN-linkit-smart-7688-webUI.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=65af1c14325346c3e351475e8c1372ce1362ae59
+PKG_SOURCE_VERSION:=4131b266241eb0dec869be30a7e66967ee58601d
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
 include $(INCLUDE_DIR)/package.mk
@@ -39,8 +39,8 @@ define Package/rfn-mtk-linkit-webui/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/build/* $(1)/www/build/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/ru-*.html $(1)/www/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/index.html $(1)/www/index_7688.html
-	$(INSTALL_DIR) $(TOPDIR)/files/etc
-	$(INSTALL_DATA) ./files/etc/rc.local $(TOPDIR)/files/etc/rc.local
+#	$(INSTALL_DIR) $(TOPDIR)/files/etc
+#	$(INSTALL_DATA) ./files/etc/rc.local $(TOPDIR)/files/etc/rc.local
 endef
 
 $(eval $(call BuildPackage,rfn-mtk-linkit-webui))
