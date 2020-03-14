@@ -13,7 +13,7 @@ define Package/mtk-linkit
     +avahi-nodbus-daemon +blockd \
     +uhttpd +rpcd +rpcd-mod-iwinfo +rpcd-mod-file +git +git-http +samba36-server \
     +python +python-pyserial +python-pip +hidapi \
-    +libmraa +libupm +node +node-hid +node-cylon-firmata +yunbridge \
+    +libmraa +node +node-hid +node-cylon-firmata +yunbridge \
     +luci +luci-theme-openwrt +luci-app-samba +luci-lib-json \
     +rpcd-mod-rpcsys +cgi-io +avrdude +spi-tools +uboot-envtools \
     +kmod-cfg80211 +wireless-tools +libuci \
