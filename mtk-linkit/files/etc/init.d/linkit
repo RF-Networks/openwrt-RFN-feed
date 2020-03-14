@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2015 OpenWrt.org
+
+START=10
+
+start()
+{
+	# ugly hack alert - this is required to override the luci index.html file
+	[ -f /www/index_7688.html ] && {
+		cp /www/index_7688.html /www/index.html
+		rm /www/index_7688.html
+	}
+}

@@ -1,0 +1,191 @@
+#!/bin/sh
+
+. /lib/config/uci.sh
+. /lib/functions.sh
+
+check_uci_property() {
+  local cfg="$1"
+  local sec="$2"
+  local opt="$3"; shift
+  local prop
+
+  if [ -z "${opt}" ]; then
+    prop=`uci -q get ${cfg}.${sec}`
+  else
+    prop=`uci -q get ${cfg}.${sec}.${opt}`
+  fi
+
+  if [ -z "${prop}" ]; then
+    retval=0
+  else
+    retval=1
+  fi
+  return "$retval"
+}
+
+set_uci_property() {
+  local cfg="$1"
+  local sec="$2"
+  local opt="$3"
+  local val="$4"
+  local type="$5"; shift
+  
+  check_uci_property ${cfg} ${sec}
+
+  config_load ${cfg}
+  if [ $? == 0 ]; then
+    # Add
+    uci set ${cfg}.${sec}=${type}
+  fi
+  uci set ${cfg}.${sec}.${opt}="${val}"
+}
+
+delete_uci_property() {
+  local cfg="$1"
+  local sec="$2"
+  local opt="$3"; shift
+
+  check_uci_property ${cfg} ${sec} ${opt}
+  if [ $? == 1 ]; then
+    # Delete
+    uci delete ${cfg}.${sec}.${opt}
+  fi
+}
+
+config_apply() {
+  local realm="$1"
+  [ -n "$(uci changes ${realm})" ] && uci -q commit ${realm}
+}
+
+sleep 1
+
+case $1 in
+apsta)
+    set_uci_property network lan type bridge interface
+	set_uci_property network lan netmask 255.255.255.0 interface
+	set_uci_property network lan ipassign 60 interface
+	set_uci_property network lan ipaddr 192.168.100.1 interface
+	set_uci_property network lan proto static interface
+	set_uci_property dhcp lan ignore 0 dhcp
+	set_uci_property dhcp wan ignore 1 dhcp
+	delete_uci_property network wan type
+	delete_uci_property network wan netmask
+	delete_uci_property network wan ip6assign
+	delete_uci_property network wan ipaddr
+	set_uci_property network wan proto dhcp interface
+
+	delete_uci_property firewall @zone[0] masq
+	delete_uci_property firewall @zone[0] mtu_fix
+	set_uci_property firewall @zone[1] masq 1 zone
+	set_uci_property firewall @zone[1] mtu_fix 1 zone
+
+	set_uci_property wireless sta disabled 0 wifi-iface
+
+	set_uci_property wireless ap disabled 0 wifi-iface
+	set_uci_property wireless ap network 'lan' wifi-iface
+	config_apply network
+    config_apply wireless
+    config_apply dhcp
+    config_apply firewall
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
+    ;;
+sta)
+    set_uci_property network lan type bridge interface
+	set_uci_property network lan netmask 255.255.255.0 interface
+	set_uci_property network lan ipassign 60 interface
+	set_uci_property network lan ipaddr 192.168.100.1 interface
+	set_uci_property network lan proto static interface
+	set_uci_property dhcp lan ignore 0 dhcp
+	set_uci_property dhcp wan ignore 1 dhcp
+	delete_uci_property network wan type
+	delete_uci_property network wan netmask
+	delete_uci_property network wan ip6assign
+	delete_uci_property network wan ipaddr
+	set_uci_property network wan proto dhcp interface
+
+	delete_uci_property firewall @zone[0] masq
+	delete_uci_property firewall @zone[0] mtu_fix
+	set_uci_property firewall @zone[1] masq 1 zone
+	set_uci_property firewall @zone[1] mtu_fix 1 zone
+
+	set_uci_property wireless sta disabled 0 wifi-iface
+
+	set_uci_property wireless ap disabled 1 wifi-iface
+	set_uci_property wireless ap network 'lan' wifi-iface
+	config_apply network
+    config_apply wireless
+    config_apply dhcp
+    config_apply firewall
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
+    ;;
+ap)
+    set_uci_property network lan type bridge interface
+	set_uci_property network lan netmask 255.255.255.0 interface
+	set_uci_property network lan ipassign 60 interface
+	set_uci_property network lan ipaddr 192.168.100.1 interface
+	set_uci_property network lan proto static interface
+	set_uci_property dhcp lan ignore 0 dhcp
+	set_uci_property dhcp wan ignore 1 dhcp
+	delete_uci_property network wan type
+	delete_uci_property network wan netmask
+	delete_uci_property network wan ip6assign
+	delete_uci_property network wan ipaddr
+	set_uci_property network wan proto dhcp interface
+
+	delete_uci_property firewall @zone[0] masq
+	delete_uci_property firewall @zone[0] mtu_fix
+	set_uci_property firewall @zone[1] masq 1 zone
+	set_uci_property firewall @zone[1] mtu_fix 1 zone
+
+	set_uci_property wireless sta disabled 1 wifi-iface
+
+	set_uci_property wireless ap disabled 0 wifi-iface
+	set_uci_property wireless ap network 'lan' wifi-iface
+	config_apply network
+    config_apply wireless
+    config_apply dhcp
+    config_apply firewall
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
+    ;;
+lancli)
+    set_uci_property network lan proto dhcp interface
+    delete_uci_property network lan type
+    delete_uci_property network lan netmask
+    delete_uci_property network lan ip6assign
+    delete_uci_property network lan ipaddr
+
+    set_uci_property network wan ifname wlan0 interface
+    set_uci_property network wan netmask 255.255.255.0 interface
+    set_uci_property network wan ip6assign 64 interface
+    set_uci_property network wan ipaddr 192.168.100.1 interface
+    set_uci_property network wan proto static interface
+    set_uci_property dhcp wan ignore 0 dhcp
+    set_uci_property dhcp wan start 100 dhcp
+    set_uci_property dhcp wan limit 150 dhcp
+    set_uci_property dhcp wan leasetime 12h dhcp
+    set_uci_property dhcp lan ignore 1 dhcp
+
+    delete_uci_property firewall @zone[1] masq
+	delete_uci_property firewall @zone[1] mtu_fix
+	set_uci_property firewall @zone[0] masq 1 zone
+	set_uci_property firewall @zone[0] mtu_fix 1 zone
+
+    set_uci_property wireless sta disabled 1 wifi-iface
+
+    set_uci_property wireless ap disabled 0 wifi-iface
+    set_uci_property wireless ap network 'lan wan' wifi-iface
+    config_apply network
+    config_apply wireless
+    config_apply dhcp
+    config_apply firewall
+	if [ "$2" != "norestart" ]; then
+	    /etc/init.d/network restart
+    fi
+    ;;
+esac
