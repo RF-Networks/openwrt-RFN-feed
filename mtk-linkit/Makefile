@@ -40,7 +40,7 @@ define Package/mtk-linkit/install
 	
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/pinmux $(1)/sbin/mt7688_pinmux
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/refclk $(1)/sbin/mt7688_reclk
-	$(CP) ./files/* $(1)
+	$(CP) ./files/* $(1)/
 endef
 
 $(eval $(call BuildPackage,mtk-linkit))
