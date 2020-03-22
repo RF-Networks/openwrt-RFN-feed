@@ -13,11 +13,14 @@
 		},
 		"write": {
 			"cgi-io": [ "upload", ],
+			"file": {
+				"/usr/bin/wifi_mode" : [ "exec" ],
+			},
 			"ubus": {
 				"session": [ "grant", "logout" ],
 				"uci": [ "get", "set", "rename", "delete", "apply", "reload_config", "commit" ],
 				"rpc-sys": [ "*" ],
-                "file": [ "exec" ],
+                		"file": [ "exec" ],
 			},
 			"uci": [ "network", "wireless", "system" ]
 		}
