@@ -11,7 +11,7 @@ define Package/mtk-linkit
   DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
     +gdbserver +curl +strace +coreutils +coreutils-stty \
     +avahi-nodbus-daemon +blockd \
-    +uhttpd +rpcd +rpcd-mod-iwinfo +rpcd-mod-file +git +git-http +samba36-server \
+    +uhttpd +uhttpd-mod-ubus +rpcd +rpcd-mod-iwinfo +rpcd-mod-file +git +git-http +samba36-server \
     +python +python-pyserial +python-pip +hidapi \
     +libmraa +node +node-hid +node-cylon-firmata +yunbridge \
     +luci +luci-theme-openwrt +luci-app-samba +luci-lib-json \
