@@ -37,8 +37,6 @@ endef
 
 define Package/mtk-linkit/install
 	$(INSTALL_DIR) $(1)/bin
-	$(INSTALL_DIR) $(1)/sbin
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/pinmux $(1)/sbin/mt7688_pinmux
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/refclk $(1)/sbin/mt7688_reclk
