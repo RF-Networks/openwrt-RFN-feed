@@ -27,7 +27,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Device.cpp src/RFNMeshDevice.cpp src/TelitStarDevice.cpp src/RFNTagReceiverDevice.cpp /src/TelitMeshDevice.cpp src/DeviceFactory.cpp src/Uploader.cpp src/log.cpp src/lrffp.cpp src/GPIO.cpp -o $(PKG_BUILD_DIR)/lrffp -lz -lserial
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/Device.cpp src/RFNMeshDevice.cpp src/TelitStarDevice.cpp src/RFNTagReceiverDevice.cpp src/TelitMeshDevice.cpp src/DeviceFactory.cpp src/Uploader.cpp src/log.cpp src/lrffp.cpp src/GPIO.cpp -o $(PKG_BUILD_DIR)/lrffp -lz -lserial
 endef
 
 define Package/RFN-lrffp/install
