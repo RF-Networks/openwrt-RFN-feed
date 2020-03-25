@@ -35,7 +35,7 @@ In the Ubuntu system, open the *Terminal* application and type the following com
 4. Add the RFNWatchdog feed:
     
     ```
-    $ echo src-git rfn https://github.com/RF-Networks/openwrt-RFN-feed.git;openwrt-19.07 >> feeds.conf
+    $ echo "src-git rfn https://github.com/RF-Networks/openwrt-RFN-feed.git;openwrt-19.07" >> feeds.conf
     ```
 5. Update the feed information of all available packages for building the firmware:
     
