@@ -68,12 +68,12 @@ define Build/InstallDev
     $(INSTALL_DIR) $(1)/usr/include/$(PKG_NAME)
     $(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/$(PKG_NAME)/*.h $(1)/usr/include/$(PKG_NAME)
     $(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so* $(1)/usr/lib
+    $(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so* $(1)/usr/lib
 endef
 
 define Package/$(PKG_NAME)/install
     $(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).* $(1)/usr/lib
+    $(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).* $(1)/usr/lib
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
