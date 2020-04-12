@@ -63,15 +63,15 @@ define Build/Compile
 endef
 
 define Build/InstallDev
-    $(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/include/gsmlib
+    $(INSTALL_DIR) $(1)/usr/include/gsmlib
     $(CP) \
         $(PKG_BUILD_DIR)/gsmlib/*.h \
-        $(PKG_INSTALL_DIR)/usr/include/gsmlib/
+        $(1)/usr/include/gsmlib/
 
-    $(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/lib
+    $(INSTALL_DIR) $(1)/usr/lib
     $(CP) \
 	$(PKG_BUILD_DIR)/$(PKG_NAME).so* \
-	$(PKG_INSTALL_DIR)/usr/lib/
+	$(1)/usr/lib/
 endef
 
 define Package/$(PKG_NAME)/install
