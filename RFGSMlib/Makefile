@@ -61,7 +61,7 @@ endef
 TARGET_CXXFLAGS += -DHAVE_CONFIG_H -fPIC -I$(PKG_BUILD_DIR)
 
 define Build/Compile
-	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) -shared -o $(PKG_BUILD_DIR)/$(PKG_NAME).so
+    $(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) -shared -o $(PKG_BUILD_DIR)/$(PKG_NAME).so
 endef
 
 define Build/InstallDev
