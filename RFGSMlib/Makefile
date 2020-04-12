@@ -20,8 +20,6 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_SOURCE_VERSION).tar.gz
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
-PKG_INSTALL:=1
-
 PKG_LICENSE:=LGPL-2.1+
 PKG_LICENSE_FILES:=COPYING
 
@@ -43,8 +41,10 @@ SOURCES:=\
     $(PKG_BUILD_DIR)/gsmlib/gsm_unix_serial.cc \
     $(PKG_BUILD_DIR)/gsmlib/gsm_util.cc 
 
+TARGET_CXXFLAGS += -DHAVE_CONFIG_H $(FPIC) -I$(PKG_BUILD_DIR)
+TARGET_LDFLAGS += -shared
+
 include $(INCLUDE_DIR)/package.mk
-#include $(INCLUDE_DIR)/cmake.mk
 
 define Package/$(PKG_NAME)
   SECTION:=libs
@@ -58,22 +58,27 @@ define Package/$(PKG_NAME)/description
   A library to access GSM mobile phones via GSM modems.
 endef
 
-TARGET_CXXFLAGS += -DHAVE_CONFIG_H -fPIC -I$(PKG_BUILD_DIR)
-
 define Build/Compile
-    $(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) -shared -o $(PKG_BUILD_DIR)/$(PKG_NAME).so
+    $(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) $(TARGET_LDFLAGS) -o $(PKG_BUILD_DIR)/$(PKG_NAME).so
 endef
 
 define Build/InstallDev
-    $(INSTALL_DIR) $(1)/usr/include/$(PKG_NAME)
-    $(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/$(PKG_NAME)/*.h $(1)/usr/include/$(PKG_NAME)
-    $(INSTALL_DIR) $(1)/usr/lib
-    $(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so* $(1)/usr/lib
+    $(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/include/$(PKG_NAME)
+	$(CP) \
+            $(PKG_BUILD_DIR)/gsmlib/*.h \
+            $(PKG_INSTALL_DIR)/usr/include/$(PKG_NAME)/
+
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) \
+		$(PKG_BUILD_DIR)/$(PKG_NAME).so* \
+		$(1)/usr/lib/
 endef
 
 define Package/$(PKG_NAME)/install
     $(INSTALL_DIR) $(1)/usr/lib
-    $(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).* $(1)/usr/lib
+	$(CP) \
+		$(PKG_BUILD_DIR)/$(PKG_NAME).so* \
+		$(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
