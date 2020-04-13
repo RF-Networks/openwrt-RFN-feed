@@ -64,21 +64,12 @@ endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/gsmlib
-	$(CP) \	
-		$(PKG_BUILD_DIR)/gsmlib/*.h \ 
-		$(1)/usr/include/gsmlib
-
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) \
-		$(PKG_BUILD_DIR)/$(PKG_NAME).so* \
-		$(1)/usr/lib
+	$(CP) $(PKG_BUILD_DIR)/gsmlib/*.h $(1)/usr/include/gsmlib/
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) \
-		$(PKG_BUILD_DIR)/$(PKG_NAME).so* \ 
-		$(1)/usr/lib
+	$(CP) $(PKG_BUILD_DIR)/$(PKG_NAME).so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
