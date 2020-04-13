@@ -59,17 +59,23 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Compile
-	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) $(TARGET_LDFLAGS) -o $(PKG_BUILD_DIR)/$(PKG_NAME).so
+	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) $(TARGET_LDFLAGS) -o $(PKG_BUILD_DIR)/lib$(PKG_NAME).so
+	$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/lib
+	$(CP) $(PKG_BUILD_DIR)/lib$(PKG_NAME).so* $(PKG_INSTALL_DIR)/usr/lib/
+	$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/include/gsmlib
+	$(CP) $(PKG_BUILD_DIR)/gsmlib/*.h $(PKG_INSTALL_DIR)/usr/include/gsmlib/
 endef
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include/gsmlib
-	$(CP) $(PKG_BUILD_DIR)/gsmlib/*.h $(1)/usr/include/gsmlib/
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib$(PKG_NAME).so* $(1)/usr/lib/
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_BUILD_DIR)/$(PKG_NAME).so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib$(PKG_NAME).so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
