@@ -42,7 +42,7 @@ SOURCES:=\
     $(PKG_BUILD_DIR)/gsmlib/gsm_util.cc 
 
 TARGET_CXXFLAGS += -DHAVE_CONFIG_H $(FPIC) -I$(PKG_BUILD_DIR)
-TARGET_LDFLAGS += -shared
+TARGET_LDFLAGS += -lpthread -shared
 
 include $(INCLUDE_DIR)/package.mk
 
