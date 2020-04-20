@@ -299,7 +299,7 @@ void Socket::initSocket() {
 
 Socket::Socket(const string& hostTo, unsigned portTo, Protocol protocol, IPVer ipVer) :
                 _hostTo(hostTo), _portTo(portTo), _portFrom(0), _protocol(protocol),
-                _ipVer(ipVer), _type(CLIENT), _blocking(true), _listenQueue(0)
+                _ipVer(ipVer), _type(CLIENT), _blocking(true), _listenQueue(0), _connectTimeout(connectTimeout)
 {
     initSocket();
 }
@@ -321,7 +321,7 @@ Socket::Socket(const string& hostTo, unsigned portTo, Protocol protocol, IPVer i
 
 Socket::Socket(unsigned portFrom, Protocol protocol, IPVer ipVer, const string& hostFrom, unsigned listenQueue):
                 _hostFrom(hostFrom), _portTo(0), _portFrom(portFrom), _protocol(protocol),
-                _ipVer(ipVer), _type(SERVER), _blocking(true), _listenQueue(listenQueue)
+                _ipVer(ipVer), _type(SERVER), _blocking(true), _listenQueue(listenQueue), _connectTimeout(5)
 {
     initSocket();
 }
@@ -342,14 +342,14 @@ Socket::Socket(unsigned portFrom, Protocol protocol, IPVer ipVer, const string& 
 
 Socket::Socket(const string& hostTo, unsigned portTo, unsigned portFrom, IPVer ipVer):
                 _hostTo(hostTo), _portTo(portTo), _portFrom(portFrom), _protocol(UDP),
-                _ipVer(ipVer), _type(CLIENT), _blocking(true), _listenQueue(0)
+                _ipVer(ipVer), _type(CLIENT), _blocking(true), _listenQueue(0), _connectTimeout(5)
 {
 
     initSocket();
 }
 
 
-Socket::Socket() : _blocking(true), _socketHandler(-1) {};
+Socket::Socket() : _hostTo(""), _portTo(0), _portFrom(0), _protocol(UDP), _ipVer(ANY), _type(CLIENT), _blocking(true), _listenQueue(DEFAULT_LISTEN_QUEUE), _socketHandler(-1), _connectTimeout(5) {};
 
 
 /**

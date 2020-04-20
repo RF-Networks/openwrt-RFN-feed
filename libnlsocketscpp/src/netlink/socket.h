@@ -55,7 +55,7 @@ class Socket {
 
     public:
 
-        Socket(const string& hostTo, unsigned portTo, Protocol protocol = TCP, IPVer ipVer = ANY);
+        Socket(const string& hostTo, unsigned portTo, Protocol protocol = TCP, IPVer ipVer = ANY, int connectTimeout = 5);
 
         Socket(unsigned portFrom, Protocol protocol = TCP, IPVer ipVer = IP4, const string& hostFrom = "", unsigned listenQueue = DEFAULT_LISTEN_QUEUE);
 
