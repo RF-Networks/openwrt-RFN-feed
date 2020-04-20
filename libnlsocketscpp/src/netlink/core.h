@@ -60,7 +60,7 @@
     #include <sys/fcntl.h>
     #include <sys/types.h>
     #include <sys/socket.h>
-    #include <sys/unistd.h>
+    #include <unistd.h>
     #include <sys/time.h>
     #include <netdb.h>
     #include <sys/ioctl.h>
