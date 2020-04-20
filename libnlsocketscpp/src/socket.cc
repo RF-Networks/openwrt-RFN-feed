@@ -297,7 +297,7 @@ void Socket::initSocket() {
 */
 
 
-Socket::Socket(const string& hostTo, unsigned portTo, Protocol protocol, IPVer ipVer) :
+Socket::Socket(const string& hostTo, unsigned portTo, Protocol protocol, IPVer ipVer, int connectTimeout) :
                 _hostTo(hostTo), _portTo(portTo), _portFrom(0), _protocol(protocol),
                 _ipVer(ipVer), _type(CLIENT), _blocking(true), _listenQueue(0), _connectTimeout(connectTimeout)
 {
