@@ -51,7 +51,7 @@ class Socket {
         unsigned    _listenQueue;
 
         int         _socketHandler;
-
+		int         _connectTimeout;
 
     public:
 

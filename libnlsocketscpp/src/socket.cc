@@ -120,7 +120,10 @@ static void checkReadError(const string& functionName) {
 
 void Socket::initSocket() {
 
+    int ret;
     struct addrinfo conf, *res = NULL;
+	struct timeval		tv;
+    fd_set			fds;
     memset(&conf, 0, sizeof(conf));
 
     if(_type == SERVER || _protocol == UDP)
@@ -212,9 +215,20 @@ void Socket::initSocket() {
                             connected = true;
                     }
                     else {
+						fcntl(_socketHandler, F_SETFL, O_NONBLOCK);
                         status = connect(_socketHandler, res->ai_addr, res->ai_addrlen);
-                        if(status != -1)
-                            connected = true;
+                        if(status != -1 || (status == -1 && errno == EINPROGRESS)) {
+                            tv.tv_sec = _connectTimeout;
+							tv.tv_usec = 0;
+							FD_ZERO(&fds);
+							FD_SET(_socketHandler, &fds);
+							ret = select(_socketHandler + 1, NULL, &fds, NULL, &tv);
+							if (ret > 0) {
+								connected = true;
+							} else {
+								close(_socketHandler);
+							}
+						}
                         else
                             close(_socketHandler);
                     }
