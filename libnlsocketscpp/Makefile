@@ -8,8 +8,13 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libnlsocketscpp
 PKG_VERSION:=1.0.0
+PKG_RELEASE=1
 
-PKG_RELEASE=$(PKG_SOURCE_VERSION)
+PKG_SOURCE_URL:=https://sourceforge.net/projects/netlinksockets/files/release/1.0.0-pre-6/
+PKG_SOURCE_PROTO:=svn
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_VERSION:=EAC4F4108B5B26902D1FFD0492FBBB21
+PKG_SOURCE:=netLink_v1.0.0_pre_6.zip
 
 include $(INCLUDE_DIR)/package.mk
 

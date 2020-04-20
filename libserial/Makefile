@@ -45,4 +45,3 @@ define Package/libserial/install
 endef
 
 $(eval $(call BuildPackage,libserial))
-
