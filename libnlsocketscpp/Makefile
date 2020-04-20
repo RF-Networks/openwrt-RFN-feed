@@ -10,11 +10,15 @@ PKG_NAME:=libnlsocketscpp
 PKG_VERSION:=1.0.0
 PKG_RELEASE=1
 
-PKG_SOURCE_URL:=https://sourceforge.net/projects/netlinksockets/files/release/1.0.0-pre-6/
-PKG_SOURCE_PROTO:=svn
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=EAC4F4108B5B26902D1FFD0492FBBB21
-PKG_SOURCE:=netLink_v1.0.0_pre_6.zip
+SOURCES:=\
+    src/core.cc \
+    src/smart_buffer.cc \
+    src/socket.cc \
+    src/socket_group.cc \
+    src/util.cc \
+	
+TARGET_CXXFLAGS += -DHAVE_CONFIG_H $(FPIC) -I$(PKG_BUILD_DIR)
+TARGET_LDFLAGS += -lpthread -shared
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -29,6 +33,16 @@ define Package/$(PKG_NAME)/description
   Networking/Socket C++ Library.
 endef
 
+define Build/Prepare
+	mkdir -p $(PKG_BUILD_DIR)
+endef
+
+define Build/Compile
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) $(SOURCES) $(TARGET_LDFLAGS) -o $(PKG_BUILD_DIR)/lib$(PKG_NAME).so
+		$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/lib
+		$(CP) $(PKG_BUILD_DIR)/lib$(PKG_NAME).so* $(PKG_INSTALL_DIR)/usr/lib/
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
@@ -38,6 +52,7 @@ endef
 
 define Package/$(PKG_NAME)/install
     $(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib$(PKG_NAME).so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
