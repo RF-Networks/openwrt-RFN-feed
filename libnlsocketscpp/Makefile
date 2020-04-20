@@ -42,7 +42,7 @@ define Build/Compile
 		$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/lib
 		$(CP) $(PKG_BUILD_DIR)/$(PKG_NAME).so* $(PKG_INSTALL_DIR)/usr/lib/
 		$(INSTALL_DIR) $(PKG_INSTALL_DIR)/usr/include/netlink
-		$(CP) src/netlink/*.h $(PKG_INSTALL_DIR)/usr/include/netlink/
+		$(CP) src/netlink/* $(PKG_INSTALL_DIR)/usr/include/netlink/
 endef
 
 define Build/InstallDev
