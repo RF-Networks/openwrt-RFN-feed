@@ -17,7 +17,7 @@ SOURCES:=\
     src/socket_group.cc \
     src/util.cc \
 	
-TARGET_CXXFLAGS += $(FPIC) -I$(PKG_BUILD_DIR) -Isrc -pthread -Wcpp
+TARGET_CXXFLAGS += $(FPIC) -I$(PKG_BUILD_DIR) -Isrc -pthread -Wno-cpp
 TARGET_LDFLAGS += -lpthread -shared
 
 include $(INCLUDE_DIR)/package.mk
