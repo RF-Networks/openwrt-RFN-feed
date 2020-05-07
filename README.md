@@ -32,7 +32,7 @@ In the Ubuntu system, open the *Terminal* application and type the following com
     $ cp feeds.conf.default feeds.conf
     ```
     
-4. Add the RFNWatchdog feed:
+4. Add the RFN feed:
     
     ```
     $ echo "src-git rfn https://github.com/RF-Networks/openwrt-RFN-feed.git;openwrt-19.07" >> feeds.conf
