@@ -26,7 +26,7 @@ define Package/lib$(PKG_NAME)
   TITLE:=Eclipse Paho MQTT C++ Client Library
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=libpaho.mqtt.c
+  DEPENDS:=+libstdcpp +libpaho.mqtt.c
 endef
 
 define Package/lib$(PKG_NAME)/description
