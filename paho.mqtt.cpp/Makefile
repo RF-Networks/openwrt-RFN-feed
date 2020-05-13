@@ -22,19 +22,27 @@ CMAKE_INSTALL:=1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-define Package/$(PKG_NAME)
+define Package/lib$(PKG_NAME)
   TITLE:=Eclipse Paho MQTT C++ Client Library
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=paho.mqtt.c
+  DEPENDS:=libpaho.mqtt.c
 endef
 
-define Package/$(PKG_NAME)/description
+define Package/lib$(PKG_NAME)/description
   Eclipse Paho MQTT C++ client library for memory-managed operating systems.
 endef
 
-define Package/$(PKG_NAME)/install
-
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/include/mqtt
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/mqtt/*.h $(1)/usr/include/mqtt
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpaho-mqttpp3*.so* $(1)/usr/lib/	
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+define Package/lib$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpaho-mqttpp3*.so* $(1)/usr/lib/
+endef
+
+$(eval $(call BuildPackage,lib$(PKG_NAME)))
