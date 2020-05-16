@@ -15,6 +15,9 @@
 			"cgi-io": [ "upload", ],
 			"file": {
 				"/usr/bin/wifi_mode" : [ "exec" ],
+                "/root/aws.ca" : [ "write" ],
+                "/root/aws.crt" : [ "write" ],
+                "/root/aws.key" : [ "write" ],
 			},
 			"ubus": {
 				"session": [ "grant", "logout" ],
