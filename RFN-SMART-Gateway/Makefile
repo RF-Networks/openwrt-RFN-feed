@@ -27,7 +27,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/$(PKG_NAME)
   CATEGORY:=RFN
   TITLE:=SMART-Gateway software
-  DEPENDS:=+libstdcpp  +zlib +boost-filesystem +RFGSMlib +libserial +libnlsocketscpp +libpaho.mqtt.cpp +libubox +libuci +libgps +gpsd +gpsd-clients
+  DEPENDS:=+libstdcpp  +zlib +boost-filesystem +RFGSMlib +libserial +libnlsocketscpp +libpaho.mqtt.cpp +libubox +libuci +libgps +gpsd +gpsd-clients +libgpiod +libi2c
 endef
 
 define Package/$(PKG_NAME)/description
