@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=RFN-SMART-Gateway
-PKG_VERSION:=2.0.2
+PKG_VERSION:=2.0.3
 PKG_RELEASE=1
 
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/rfn-smart-gateway.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=5903ea2eb55199dc936fe85d5a53bc59bcf8b3e6
+PKG_SOURCE_VERSION:=ef54ec80dbf1c8ee1c39f008b588e559e9fcd760
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -27,7 +27,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/$(PKG_NAME)
   CATEGORY:=RFN
   TITLE:=SMART-Gateway software
-  DEPENDS:=+libstdcpp  +zlib +boost-filesystem +RFGSMlib +libserial +libnlsocketscpp +libpaho.mqtt.cpp +libubox +libuci
+  DEPENDS:=+libstdcpp  +zlib +boost-filesystem +RFGSMlib +libserial +libnlsocketscpp +libpaho.mqtt.cpp +libubox +libuci +libgps +gpsd +gpsd-clients
 endef
 
 define Package/$(PKG_NAME)/description
