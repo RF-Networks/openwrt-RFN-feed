@@ -40,8 +40,7 @@ define Package/rfn-mtk-linkit-webui/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/ru-*.html $(1)/www/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/app/index.html $(1)/www/index_7688.html
 	$(INSTALL_DIR) $(TOPDIR)/files/etc
-    $(CP) ./files/* $(TOPDIR)/files/
-#	$(INSTALL_DATA) ./files/etc/rc.local $(TOPDIR)/files/etc/rc.local
+    $(INSTALL_DATA) ./files/etc/rc.local $(TOPDIR)/files/etc/rc.local
 endef
 
 $(eval $(call BuildPackage,rfn-mtk-linkit-webui))
