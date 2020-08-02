@@ -1,0 +1,54 @@
+#!/bin/sh
+
+modem_turn_on() {
+    echo "Turning modem on"
+    echo 14 > /sys/class/gpio/export
+    echo 16 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio14/direction
+    echo out > /sys/class/gpio/gpio16/direction
+
+    echo 0 >  /sys/class/gpio/gpio16/value
+    echo 1 >  /sys/class/gpio/gpio14/value
+    sleep 10
+    echo 0 >  /sys/class/gpio/gpio14/value
+
+    echo 14 > /sys/class/gpio/unexport
+    echo 16 > /sys/class/gpio/unexport    
+}
+
+modem_turn_off() {
+	echo "Turning modem off"
+    echo 14 > /sys/class/gpio/export
+    echo 16 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio14/direction
+    echo out > /sys/class/gpio/gpio16/direction
+	
+	echo 0 >  /sys/class/gpio/gpio16/value
+    echo 1 >  /sys/class/gpio/gpio14/value
+    sleep 1
+    echo 0 >  /sys/class/gpio/gpio14/value
+	sleep 3
+	echo 14 > /sys/class/gpio/unexport
+    echo 16 > /sys/class/gpio/unexport 
+}
+
+case $1 in
+on)
+    if [ ! -c "/dev/ttyACM0" ] && [ ! -c "/dev/cdc-wdm0" ]; then
+		modem_turn_on
+    else
+		echo "Modem is on"
+    fi
+    ;;
+off)
+    if [ -c "/dev/ttyACM0" ] || [ -c "/dev/cdc-wdm0" ]; then
+		modem_turn_off
+    else
+		echo "Modem is off"
+    fi
+    ;;
+restart)
+	modem_turn_off
+	modem_turn_on
+    ;;
+esac
