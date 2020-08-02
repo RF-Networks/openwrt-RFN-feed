@@ -27,7 +27,7 @@ define Package/rfn-mtk-linkit-webui
 endef
 
 define Build/Prepare
-    $(Build/Prepare/Default)
+    $(INSTALL_DIR) $(TOPDIR)/files
     $(CP) ./files/* $(TOPDIR)/files/
 endef
 
