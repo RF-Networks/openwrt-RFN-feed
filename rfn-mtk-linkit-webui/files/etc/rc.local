@@ -6,27 +6,7 @@ echo ds1307 0x68 > /sys/bus/i2c/devices/i2c-0/new_device
 sleep 1
 hwclock -s
 
-if [ ! -c "/dev/ttyACM0" ] && [ ! -c "/dev/cdc-wdm0" ]; then
-
-# Restart modem
-echo 14 > /sys/class/gpio/export
-echo 16 > /sys/class/gpio/export
-echo out > /sys/class/gpio/gpio14/direction
-echo out > /sys/class/gpio/gpio16/direction
-
-# Turn modem off
-echo 1 >  /sys/class/gpio/gpio16/value
-sleep 5
-
-# Turn modem on
-echo 0 >  /sys/class/gpio/gpio16/value
-echo 1 >  /sys/class/gpio/gpio14/value
-sleep 10
-echo 0 >  /sys/class/gpio/gpio14/value
-
-echo 14 > /sys/class/gpio/unexport
-echo 16 > /sys/class/gpio/unexport
-
-fi
+# Start modem
+modem_ctrl on
 
 exit 0
