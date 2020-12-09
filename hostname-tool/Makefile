@@ -24,7 +24,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Onion
 	SUBMENU:=Network
 	TITLE:=Tool to properly set the Omega2's Hostname to the last 4 digits of its MAC address
-	DEPENDS:=
+	DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_omega2p
 endef
 
 define Package/$(PKG_NAME)/description

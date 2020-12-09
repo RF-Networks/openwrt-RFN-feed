@@ -27,7 +27,7 @@ define Package/$(PKG_NAME)
     CATEGORY:=Utilities
     SUBMENU:=Onion
     TITLE:=Simple utility to manipulate GPIOs
-    DEPENDS:=+libugpio
+    DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_omega2p +libugpio
 endef
 
 define Package/$(PKG_NAME)/description

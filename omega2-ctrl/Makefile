@@ -28,6 +28,7 @@ define Package/$(PKG_NAME)
 	SECTION:=onion
 	CATEGORY:=Onion
 	SUBMENU:=Utilities
+    DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_omega2p
 	TITLE:=Utility to control the Omega2's low-level hardware
 endef
 
