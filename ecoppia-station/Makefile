@@ -27,8 +27,8 @@ define Package/$(PKG_NAME)/description
   Ecoppia Station software for robots communication.
 endef
 
-define Package/$(PKG_NAME)/Build/Configure
-	true
+define Package/$(PKG_NAME)/Build/Prepare
+	mkdir -p $(PKG_BUILD_DIR)
 endef
 
 define Package/$(PKG_NAME)/Build/Compile
