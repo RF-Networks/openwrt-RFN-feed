@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "rtr_clnt_wd started !"
+
+#This script is a watchdog for RouterClient python script.
+#This script should be added to crontab
+
+if ps | grep -v grep | grep ecoppia_station  ; then
+        exit 0
+else
+        /sbin/ecoppia/ecoppia_station.py &
+        exit 0
+fi
+

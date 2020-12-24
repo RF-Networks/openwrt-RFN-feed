@@ -1,0 +1,83 @@
+Ecoppia CMM
+Product: Station
+
+
+
+Version 1.0.2.0 , 20/06/2017
+-----------------------
+
+Features Added
+--------------
+
+Bug Fixes
+---------
+1. max packet id 0xFFFF instend of max int
+
+Limitations
+-----------
+
+Known Issues
+------------
+
+Version 1.0.2.0 , 20/06/2017
+-----------------------
+
+Features Added
+--------------
+1. upport RFBroadcast package type
+2. improve WaitToInfo to handle varied buffer lengths
+
+
+Bug Fixes
+---------
+
+Limitations
+-----------
+
+Known Issues
+------------
+
+
+
+
+Version 1.0.1.0 , 19/04/2017
+-----------------------
+
+Features Added
+--------------
+1. reduce logs capacity
+2. use appropriate log levels
+
+
+Bug Fixes
+---------
+1. keep threads running forever
+
+Limitations
+-----------
+
+
+Known Issues
+------------
+
+
+
+
+Version 1.0.0.0 , DD/MM/YYYY
+-----------------------
+
+Features Added
+--------------
+1. init version
+
+
+Bug Fixes
+---------
+
+
+Limitations
+-----------
+
+
+Known Issues
+------------

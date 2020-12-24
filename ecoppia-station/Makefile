@@ -37,8 +37,20 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/sbin/ecoppia
-	$(INSTALL_DIR) $(1)/sbin/ecoppia/certs
+	$(INSTALL_DIR) $(1)/sbin/ecoppia/ecoppia_logs
+	$(INSTALL_DIR) $(1)/usb/bin
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(CP) ./files/* $(1)
+endef
+
+define Package/$(PKG_NAME)/postinst
+    #!/bin/sh
+    # Check if we are on real system
+    if [ -z "$${IPKG_INSTROOT}" ]; then
+        (. /etc/uci-defaults/99_add_ecoppia_to_crontab)
+        rm -f /etc/uci-defaults/99_add_ecoppia_to_crontab
+    fi
+    exit 0
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
