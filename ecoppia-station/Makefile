@@ -20,7 +20,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
   CATEGORY:=Ecoppia
   TITLE:=Ecoppia Station software
-  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 +python +python-pyserial +python-pip
+  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 +python +python-pyserial +python-pip +libmraa +libmraa-python +libmraa-python3
 endef
 
 define Package/$(PKG_NAME)/description
