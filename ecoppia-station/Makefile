@@ -6,7 +6,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=Ecoppia-Station
+PKG_NAME:=ecoppia-station
 PKG_VERSION:=0.0.1
 PKG_RELEASE=1
 
