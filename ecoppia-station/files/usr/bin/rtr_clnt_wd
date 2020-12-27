@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Check if need to activate
+[ -f "/sbin/ecoppia/ecoppia_station_provision/certs/VeriSign-Primary-Certification-Authority-G5.pem" ] && {
+    cd /sbin/ecoppia && python -m ecoppia_station_provision
+}
+
 if ps | grep -v grep | grep ecoppia/start.py  ; then
     exit 0
 else

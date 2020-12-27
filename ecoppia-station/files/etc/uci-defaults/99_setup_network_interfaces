@@ -90,12 +90,4 @@ uci set firewall.@forwarding[-1].dest='lan'
 uci commit
 luci-reload
 
-# Wait for registration
-activated=0
-while [ $activated -eq 0 ]
-do
-    cd /sbin/ecoppia && python -m ecoppia_station_provision
-    [ $? -eq 0 ] && activated=1 || sleep 10
-done
-
 return 0
