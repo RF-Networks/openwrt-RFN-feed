@@ -49,6 +49,10 @@ define Package/$(PKG_NAME)/postinst
     if [ -z "$${IPKG_INSTROOT}" ]; then
         (. /etc/uci-defaults/99_add_ecoppia_to_crontab)
         rm -f /etc/uci-defaults/99_add_ecoppia_to_crontab
+        (. /etc/uci-defaults/99_set_root_password)
+        rm -f /etc/uci-defaults/99_set_root_password
+        (. /etc/uci-defaults/99_setup_network_interfaces)
+        rm -f /etc/uci-defaults/99_setup_network_interfaces
     fi
     exit 0
 endef
