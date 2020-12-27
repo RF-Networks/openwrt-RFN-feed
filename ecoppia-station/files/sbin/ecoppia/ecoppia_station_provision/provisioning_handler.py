@@ -184,6 +184,11 @@ class ProvisioningHandler:
             f.write("ENV = 'PROD'" + os.linesep)
             f.write("PUTTY_IP = '127.0.0.1'" + os.linesep)
             f.write("PUTTY_PORT = 22" + os.linesep)
+        os.system("uci set wireless.ap.ssid='{}'".format(stationName))
+        os.system("uci set wireless.ap.encryption='psk2'")
+        os.system("uci set wireless.ap.key='ecoppiA!Gateway'")
+        os.system("uci commit")
+        os.system("luci-reload")
 
     def backupExistingCertifacates(self):
         self.logger.info("Backup Existing Certifacates")
@@ -374,7 +379,7 @@ class ProvisioningHandler:
         except Exception as e:
             self.logger.info("Failed provisioning! MAC Address - {}.".format(self.wlan0MacAddress)) 
             print(TRED + "Error in basic_callback message.topic - {} ".format(message.topic) + str(traceback.format_exc()) + ENDC)
-            os._exit(0)
+            os._exit(-1)
 
     def cert_validation_test(self):
         ENDPOINT = self.iot_endpoint
@@ -407,7 +412,7 @@ class ProvisioningHandler:
             time.sleep(2)
         except Exception as e:
             self.logger.critical("Error in new_cert_pub_sub message.topic - {} ".format(self.topic) + str(traceback.format_exc()))
-            os._exit(0)
+            os._exit(-1)
         # Wait for subscription to succeed
         self.logger.info("publish after 5 sec. to {}".format(self.topic))
         publishRslt = self.thing_MQTTClient.publish(self.topic, json.dumps({"service_response": "RESPONSE FROM PREVIOUSLY FORBIDDEN TOPIC", "ThingName" : self.thingName}), 0)

@@ -79,6 +79,7 @@ def run_provisioning(isRotation):
             logging.error("SECURE_CERT_PATH: {}, CLAIM_CERT: {}".format(config.SECURE_CERT_PATH, config.CLAIM_CERT))
             logging.error ("Exception {} ocored".format(str(traceback.format_exc())))
             print("***  Official cert may already be in place.  ***")
+            sys.exit(-1)
 
 
 if __name__ == "__main__":
@@ -89,3 +90,4 @@ if __name__ == "__main__":
     consoleHandler.level = logging.critical
     logging.getLogger().addHandler(consoleHandler)
     run_provisioning(isRotation=False)
+    sys.exit(0)
