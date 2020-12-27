@@ -1,11 +1,11 @@
 #!/bin/sh
 
 modem_ctrl on	
-sleep 1 
+sleep 1
 	
 [ -e "/dev/cdc-wdm0" ] && [ "$(uci -q get network.4G)" = "" ] && {
-    # Add 4G interface
-    echo "Adding 4G interface"
+    	# Add 4G interface
+    	echo "Adding 4G interface"
 	uci set network.4G=interface
 	uci set network.4G.proto='qmi'
 	uci set network.4G.auth='both'
@@ -21,7 +21,7 @@ sleep 1
 		uci set firewall.@zone[-1].output='ACCEPT'
 		uci set firewall.@zone[-1].forward='ACCEPT'
 		uci set firewall.@zone[-1].masq='1'
-        uci set firewall.@zone[-1].mtu_fix='1'
+	        uci set firewall.@zone[-1].mtu_fix='1'
 		
 		uci add firewall forwarding
 		uci set firewall.@forwarding[-1].src='4G'
@@ -44,8 +44,8 @@ sleep 1
 }
 
 [ -e "/dev/ttyACM3" ] && [ "$(uci -q get network.3G)" = "" ] && {
-    # Add 3G interface
-    echo "Adding 3G interface"
+    	# Add 3G interface
+    	echo "Adding 3G interface"
 	uci set network.3G=interface
 	uci set network.3G.proto='3g'
 	uci set network.3G.service='umts'
@@ -60,7 +60,7 @@ sleep 1
 		uci set firewall.@zone[-1].output='ACCEPT'
 		uci set firewall.@zone[-1].forward='ACCEPT'
 		uci set firewall.@zone[-1].masq='1'
-        uci set firewall.@zone[-1].mtu_fix='1'
+        	uci set firewall.@zone[-1].mtu_fix='1'
 		
 		uci add firewall forwarding
 		uci set firewall.@forwarding[-1].src='3G'
@@ -91,10 +91,10 @@ uci commit
 luci-reload
 
 # Wait for registration
-activated = 0
+activated=0
 while [ $activated -eq 0 ]
 do
-    python -m ecoppia_station_provision
+    cd /sbin/ecoppia && python -m ecoppia_station_provision
     [ $? -eq 0 ] && activated=1 || sleep 10
 done
 
