@@ -11,7 +11,7 @@ sleep 1
 	uci set network.4G.auth='both'
 	uci set network.4G.apn='uinternet'
 	uci set network.4G.device='/dev/cdc-wdm0'
-	uci set network.4G.pdptype='ipv4v6'
+	uci set network.4G.pdptype='ipv4'
 	
 	[ "$(uci -q get firewall.@zone[2])" = "" ] && {
 		uci add firewall zone
