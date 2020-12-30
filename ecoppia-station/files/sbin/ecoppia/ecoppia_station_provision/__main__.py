@@ -32,8 +32,10 @@ import prod_config as config
 #import dev_config as config
 import traceback
 import sys
+import os
 import json 
 import logging
+from logging.handlers import RotatingFileHandler
 from version import __version__
 
 print('\n================================================================================')
@@ -77,17 +79,41 @@ def run_provisioning(isRotation):
         except IOError:
             logging.info("### Bootstrap cert non-existent. Official cert may already be in place.")
             logging.error("SECURE_CERT_PATH: {}, CLAIM_CERT: {}".format(config.SECURE_CERT_PATH, config.CLAIM_CERT))
-            logging.error ("Exception {} ocored".format(str(traceback.format_exc())))
+            logging.error ("Exception {}".format(str(traceback.format_exc())))
             print("***  Official cert may already be in place.  ***")
             sys.exit(-1)
 
 
+def config_logs():
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+    log_file = os.path.join(base_dir, 'ecoppia_logs','station_register.log')
+
+    rolling_params = {
+        'mode': 'a',
+        'maxBytes': 100 * 1024,
+        'backupCount': 0,
+        'encoding': None,
+        'delay': 0
+    }
+
+    # logfile
+    log_format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    log_file_handler = RotatingFileHandler(log_file, **rolling_params)
+    log_file_handler.setFormatter(log_format)
+    log_file_handler.setLevel(logging.INFO)
+
+    # stdout
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_format)
+    console_handler.setLevel(logging.CRITICAL)
+
+    app_log = logging.getLogger('root')
+    app_log.setLevel(logging.DEBUG)
+    app_log.addHandler(log_file_handler)
+    app_log.addHandler(console_handler)
+
+
 if __name__ == "__main__":
-    #Logging
-    logging.getLogger(__name__)
-    logging.basicConfig(filename='register_station.log', encoding='utf-8', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.level = logging.critical
-    logging.getLogger().addHandler(consoleHandler)
+    config_logs()
     run_provisioning(isRotation=False)
     sys.exit(0)

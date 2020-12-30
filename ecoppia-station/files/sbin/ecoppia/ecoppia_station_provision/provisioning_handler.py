@@ -176,7 +176,7 @@ class ProvisioningHandler:
         self.logger.info("Create config")
         try:
             os.stat(self.configuration_directory)
-        except:
+        except Exception:
             os.mkdir(self.configuration_directory)
         stationName = self.thingName[5:]
         with open("{}/config.py".format(self.configuration_directory), "w") as f: 
@@ -189,6 +189,7 @@ class ProvisioningHandler:
         os.system("uci set wireless.ap.key='ecoppiA!Gateway'")
         os.system("uci commit")
         os.system("luci-reload")
+        os.system("/etc/init.d/network restart")
 
     def backupExistingCertifacates(self):
         self.logger.info("Backup Existing Certifacates")
