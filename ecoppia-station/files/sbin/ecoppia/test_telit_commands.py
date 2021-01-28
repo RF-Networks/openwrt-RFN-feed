@@ -49,7 +49,7 @@ class RFConnector:
 
 		try: 
 			self.ser_socket.open()
-		except:
+		except Exception:
 			app_log.error("error open serial port , " + str(traceback.format_exc()))
 			raise
 
@@ -57,7 +57,7 @@ class RFConnector:
 			try:
 				self.ser_socket.flushInput()
 				self.ser_socket.flushOutput() 
-			except:
+			except Exception:
 				app_log.error("error flush serial port...: " + str(traceback.format_exc()))
 				raise
 			else:
@@ -69,7 +69,7 @@ class RFConnector:
 		try:
 			self.ser_socket.close()
 			app_log.info("RF serial socket closed !") 
-		except:
+		except Exception:
 			app_log.error("Exception in ser_socket.close()")	
 
 

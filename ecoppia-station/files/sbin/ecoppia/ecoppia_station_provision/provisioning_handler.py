@@ -179,11 +179,15 @@ class ProvisioningHandler:
         except Exception:
             os.mkdir(self.configuration_directory)
         stationName = self.thingName[5:]
+
+        # write config file
         with open("{}/config.py".format(self.configuration_directory), "w") as f: 
             f.write("NAME = '{}'".format(stationName) + os.linesep)
             f.write("ENV = 'PROD'" + os.linesep)
             f.write("PUTTY_IP = '127.0.0.1'" + os.linesep)
             f.write("PUTTY_PORT = 22" + os.linesep)
+
+        # change AP name according to station name
         os.system("uci set wireless.ap.ssid='{}'".format(stationName))
         os.system("uci set wireless.ap.encryption='psk2'")
         os.system("uci set wireless.ap.key='ecoppiA!Gateway'")
@@ -380,7 +384,7 @@ class ProvisioningHandler:
         except Exception as e:
             self.logger.info("Failed provisioning! MAC Address - {}.".format(self.wlan0MacAddress)) 
             print(TRED + "Error in basic_callback message.topic - {} ".format(message.topic) + str(traceback.format_exc()) + ENDC)
-            os._exit(-1)
+            sys.exit(-1)
 
     def cert_validation_test(self):
         ENDPOINT = self.iot_endpoint
@@ -413,9 +417,9 @@ class ProvisioningHandler:
             time.sleep(2)
         except Exception as e:
             self.logger.critical("Error in new_cert_pub_sub message.topic - {} ".format(self.topic) + str(traceback.format_exc()))
-            os._exit(-1)
+            sys.exit(-1)
         # Wait for subscription to succeed
         self.logger.info("publish after 5 sec. to {}".format(self.topic))
         publishRslt = self.thing_MQTTClient.publish(self.topic, json.dumps({"service_response": "RESPONSE FROM PREVIOUSLY FORBIDDEN TOPIC", "ThingName" : self.thingName}), 0)
         if not publishRslt:
-            self.logger.info("Failed to publisg - {}".format(self.topic))
+            self.logger.info("Failed to publish - {}".format(self.topic))

@@ -1,6 +1,12 @@
 Ecoppia CMM
 Product: Station
 
+Version 0.0.0.29 , 20/01/2021
+-----------------------
+
+Features Added
+--------------
+1. support new station model
 
 
 Version 1.0.2.0 , 20/06/2017

@@ -4,5 +4,5 @@ if [ ! -f /etc/crontabs/root ]; then
     touch /etc/crontabs/root
 fi
 echo "Adding to crontab"
-grep -sq /usr/bin/rtr_clnt_wd /etc/crontabs/root || echo '*/1 * * * * /bin/sh /usr/bin/rtr_clnt_wd 2>&1 | /usr/bin/logger' >> /etc/crontabs/root
+grep -sq /usr/bin/rtr_clnt_wd /etc/crontabs/root || echo '*/1 * * * * /bin/sh /usr/bin/rtr_clnt_wd 2>&1' >> /etc/crontabs/root
 /etc/init.d/cron reload

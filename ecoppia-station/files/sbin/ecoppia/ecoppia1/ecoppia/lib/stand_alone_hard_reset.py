@@ -10,7 +10,7 @@ os.system(cmd)
 time.sleep(1)
 
 # support different mraa pins for old/new stations
-for reset_pin in (0, 12):
+for reset_pin in (12, 0):
     try:
         pin = mraa.Gpio(reset_pin)
         pin.dir(mraa.DIR_OUT)

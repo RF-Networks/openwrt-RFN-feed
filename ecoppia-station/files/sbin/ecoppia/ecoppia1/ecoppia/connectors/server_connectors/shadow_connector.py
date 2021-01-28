@@ -116,7 +116,7 @@ class ShadowConnector(object):
                     app_log.info("Old version received: {ver}. Skipping upgrade".format(ver = newVersion))
             else:
                 app_log.info("Delta: None")
-        except :
+        except Exception:
             weather_log.exception("shadow callback failed")
 
     def doReportState(self, type, data):
@@ -185,5 +185,5 @@ class ShadowConnector(object):
 #                rfHandler = ThreadHandler(ecoppia.handlers.rf_handler.RFHandler())
 
 #                self.subscribe(rfHandler)
-#        except :
+#        except Exception:
 #            weather_log.exception("shadow processPropertyChange failed")

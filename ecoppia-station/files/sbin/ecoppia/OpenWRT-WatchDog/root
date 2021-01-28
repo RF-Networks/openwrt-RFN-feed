@@ -1,4 +1,4 @@
 #min hour day month dayofweek command
-*/1 * * * * /bin/sh /usr/bin/rtr_clnt_wd 2>&1 | /usr/bin/logger
+*/1 * * * * /bin/sh /usr/bin/rtr_clnt_wd 2>&1 
 #crontab must (as fstab) end with the last line as space or a comment
 

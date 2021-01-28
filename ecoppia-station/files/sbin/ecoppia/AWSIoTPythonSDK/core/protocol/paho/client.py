@@ -26,7 +26,7 @@ try:
     import ssl
     cert_reqs = ssl.CERT_REQUIRED
     tls_version = ssl.PROTOCOL_TLSv1
-except:
+except Exception:
     HAVE_SSL = False
     cert_reqs = None
     tls_version = None
@@ -686,7 +686,7 @@ class Client(object):
 
             try:
                 return self.connect(host, port, keepalive, bind_address)
-            except:
+            except Exception:
                 pass
 
         raise ValueError("No SRV hosts responded")
@@ -860,7 +860,7 @@ class Client(object):
             # Can occur if we just reconnected but rlist/wlist contain a -1 for
             # some reason.
             return MQTT_ERR_CONN_LOST
-        except:
+        except Exception:
             return MQTT_ERR_UNKNOWN
 
         if self.socket() in socklist[0]:

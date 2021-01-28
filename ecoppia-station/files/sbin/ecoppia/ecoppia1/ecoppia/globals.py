@@ -7,11 +7,10 @@ from logging.handlers import RotatingFileHandler
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from syslog_bridge import SysLogLibHandler
 
-
 major_unit_version = b'\x03'
 minor_unit_version = b'\x00'
 
-software_version = '0.0.0.28'
+software_version = '0.0.0.30'
 
 TcpListenerEnable = False
 
@@ -21,17 +20,9 @@ log_formatter2 = logging.Formatter('%(asctime)s %(levelname)s [%(threadName)s] %
 stationFolder = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir))
 certificatesFolder = os.path.join(stationFolder, 'certificates')
 
-rolling_params = {
-    'mode': 'a',
-    'maxBytes': 100 * 1024,
-    'backupCount': 1,
-    'encoding': None,
-    'delay': 0
-}
-
 # Configure App logging
 app_log_file = os.path.join(stationFolder, 'ecoppia_logs','station.log')
-app_log_file_handler = RotatingFileHandler(app_log_file, **rolling_params)
+app_log_file_handler = RotatingFileHandler(app_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding='utf-8', delay=0)
 app_log_file_handler.setFormatter(log_formatter2)
 app_log_file_handler.setLevel(logging.INFO)
 
@@ -59,7 +50,7 @@ station_status_log.addHandler(station_status_file_handler)
 
 # Configure Weather logging
 weather_log_file = os.path.join(stationFolder, 'ecoppia_logs','weather.log')
-weather_log_file_handler = RotatingFileHandler(weather_log_file, **rolling_params)
+weather_log_file_handler = RotatingFileHandler(weather_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding=None, delay=0)
 weather_log_file_handler.setFormatter(log_formatter)
 weather_log_file_handler.setLevel(logging.DEBUG)
 
@@ -71,7 +62,7 @@ weather_log.addHandler(weather_log_file_handler)
 
 # Configure Tcp logging
 tcp_log_file = os.path.join(stationFolder, 'ecoppia_logs','tcp.log')
-tcp_log_file_handler = RotatingFileHandler(tcp_log_file, **rolling_params)
+tcp_log_file_handler = RotatingFileHandler(tcp_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding=None, delay=0)
 tcp_log_file_handler.setFormatter(log_formatter)
 tcp_log_file_handler.setLevel(logging.DEBUG)
 
@@ -83,7 +74,7 @@ tcp_log.addHandler(tcp_log_file_handler)
 
 # Configure AWS IOT Sdk logging
 iot_sdk_log_file = os.path.join(stationFolder, 'ecoppia_logs','iot_sdk.log')
-iot_sdk_handler = RotatingFileHandler(iot_sdk_log_file, **rolling_params)
+iot_sdk_handler = RotatingFileHandler(iot_sdk_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding=None, delay=0)
 iot_sdk_handler.setFormatter(log_formatter)
 iot_sdk_handler.setLevel(logging.INFO)
 
@@ -91,7 +82,6 @@ iot_log = logging.getLogger("AWSIoTPythonSDK.core")
 iot_log.setLevel(logging.ERROR)
 iot_log.addHandler(iot_sdk_handler)
 #iot_log.addHandler(ch)
-
 
 # SQLITE
 

@@ -360,7 +360,7 @@ class DiscoveryInfoProvider(object):
     def _convert_to_int_py3(self, input_char):
         try:
             return ord(input_char)
-        except:
+        except Exception:
             return input_char
 
     def _got_enough_bytes(self, data):

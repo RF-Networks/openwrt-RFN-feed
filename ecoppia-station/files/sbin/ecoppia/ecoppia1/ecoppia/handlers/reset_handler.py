@@ -54,7 +54,7 @@ class EnableWeather:
             app_log.info("Rebooting the device due to \"IsWeatherEnable\" = " + isenable)
             self.reset_facilitator.DoApplicationReset()
 
-        except :
+        except Exception:
             weather_log.exception("shadow processPropertyChange failed")
 
 class DisconnectedWatchdog:
@@ -88,5 +88,5 @@ class DisconnectedWatchdog:
             else:
                 self.mqtt_connector.disconnected_time_to_reset = MINIMAL_DISCONNECTED_TIME_TO_RESET
 
-        except :
+        except Exception:
             app_log.exception("shadow processPropertyChange failed")

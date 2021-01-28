@@ -13,8 +13,6 @@ import copy
 
 from _ssl import SSLError
 
-
-
 from ecoppia.globals import *
 from ecoppia.lib.reset_facilitator import *
 
@@ -22,9 +20,7 @@ import ecoppia.connectors.server_connectors.tcp_connector  as tcp
 import ecoppia.connectors.server_connectors.mqtt_connector  as mqtt
 import ecoppia.connectors.server_connectors.shadow_connector  as shadow
 
-
 import ecoppia.connectors.local_connectros.weather_connector as weather
-
 
 from ecoppia.handlers.thread_handler import *
 from ecoppia.handlers.keep_alive_handler import *
@@ -105,8 +101,8 @@ class Station:
 			app_log.fatal("MAIN METHOD - before main_loop_event.wait()")
 			reset_facilitator.main_loop_event.wait()
 			app_log.fatal("MAIN METHOD - after main_loop_event.wait()")
-			os._exit(1)
-			app_log.fatal("MAIN METHOD - after os._exit(1)")
+			sys.exit(1)
+			app_log.fatal("MAIN METHOD - after sys.exit(1)")
 
 		except Exception:
 			app_log.exception("main method failed")
