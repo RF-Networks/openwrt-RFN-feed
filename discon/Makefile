@@ -2,7 +2,7 @@
 # Copyright (C) 2021 Archil Pirmisashvili <archil@rf-networks.com>
 #
 
-#include $(TOPDIR)/rules.mk
+include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Sigmatec-Concentrator
 PKG_VERSION:=2.0.4
