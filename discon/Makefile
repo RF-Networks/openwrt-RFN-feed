@@ -11,7 +11,7 @@ PKG_RELEASE=1
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/concentrator.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=3ea5195ae761b4f5ec941c8426955d3ba9cc6dce
+PKG_SOURCE_VERSION:=44f24f01828926a74aa1904ce70f36e0de7d03dd
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -34,7 +34,7 @@ TARGET_LDFLAGS+=-L$(STAGING_DIR)/usr/lib
 
 define Package/$(PKG_NAME)/install
 			$(INSTALL_DIR) $(1)/usr/bin
-			$(INSTALL_DIR) $(PKG_BUILD_DIR)/DisCon $(1)/usr/bin/DisCon
+			$(INSTALL_BIN) $(PKG_BUILD_DIR)/DisCon $(1)/usr/bin/DisCon
 			$(CP) ./files/* $(1)
 endef
 
