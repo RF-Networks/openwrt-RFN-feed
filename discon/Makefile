@@ -34,7 +34,7 @@ TARGET_LDFLAGS+=-L$(STAGING_DIR)/usr/lib
 
 define Package/$(PKG_NAME)/install
 			$(INSTALL_DIR) $(1)/usr/bin
-			$(INSTALL_DIR) $(PKG_BUILD_DIR)/DisCon $(1)/usr/bin/DisCon
+			$(INSTALL_BIN) $(PKG_BUILD_DIR)/DisCon $(1)/usr/bin/DisCon
 			$(CP) ./files/* $(1)
 endef
 
