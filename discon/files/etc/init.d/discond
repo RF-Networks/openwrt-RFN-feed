@@ -1,0 +1,21 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2016 rf-networks.com
+
+START=99
+STOP=9
+
+boot() {
+    start
+}
+
+start() {
+    echo "Starting DisCon coordinator"
+    # commands to launch application
+    service_start /usr/bin/DisCon &
+}
+
+stop() {
+    echo "Stopping DisCon coordinator"
+    # commands to kill application
+    service_stop /usr/bin/DisCon
+}
