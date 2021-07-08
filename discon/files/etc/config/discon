@@ -1,0 +1,8 @@
+
+config server 'server'
+	option dbPath '/root'
+	option serverIP '52.202.202.87'
+	option serverPort '8854'
+
+config server 'debug'
+	option level '7'
