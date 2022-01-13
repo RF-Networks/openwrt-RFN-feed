@@ -202,6 +202,15 @@ void Socket::initSocket() {
 
         _socketHandler = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
+    #ifdef OS_WIN32
+        char yes = 1;
+    #else
+        int yes = 1;
+    #endif
+
+        if (setsockopt(_socketHandler, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+            throw Exception(Exception::ERROR_SET_SOCK_OPT, "Socket::initSocket: Error establishing socket options");
+
         if(_socketHandler != -1)
 
             switch(_type) {
@@ -236,14 +245,6 @@ void Socket::initSocket() {
                     break;
 
                 case SERVER:
-                    #ifdef OS_WIN32
-                        char yes = 1;
-                    #else
-                        int yes = 1;
-                    #endif
-
-                    if (setsockopt(_socketHandler, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-                        throw Exception(Exception::ERROR_SET_SOCK_OPT, "Socket::initSocket: Error establishing socket options");
 
                     if (bind(_socketHandler, res->ai_addr, res->ai_addrlen) == -1)
                         close(_socketHandler);
