@@ -208,10 +208,16 @@ void Socket::initSocket() {
         int yes = 1;
     #endif
 
-        if (setsockopt(_socketHandler, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-            throw Exception(Exception::ERROR_SET_SOCK_OPT, "Socket::initSocket: Error establishing socket options");
-
         if(_socketHandler != -1)
+
+            if (setsockopt(_socketHandler, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+                throw Exception(Exception::ERROR_SET_SOCK_OPT, "Socket::initSocket: Error establishing socket options");
+
+
+#ifdef SO_REUSEPORT
+            if (setsockopt(_socketHandler, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int)) == -1)
+                throw Exception(Exception::ERROR_SET_SOCK_OPT, "Socket::initSocket: Error establishing socket options (SO_REUSEPORT)");
+#endif
 
             switch(_type) {
 
