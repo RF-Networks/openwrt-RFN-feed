@@ -10,7 +10,7 @@ from syslog_bridge import SysLogLibHandler
 major_unit_version = b'\x03'
 minor_unit_version = b'\x00'
 
-software_version = '0.0.0.30'
+software_version = '0.0.0.40'
 
 TcpListenerEnable = False
 
@@ -19,10 +19,11 @@ log_formatter2 = logging.Formatter('%(asctime)s %(levelname)s [%(threadName)s] %
 
 stationFolder = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir))
 certificatesFolder = os.path.join(stationFolder, 'certificates')
+logsFolder = os.path.join(stationFolder, 'ecoppia_logs')
 
 # Configure App logging
-app_log_file = os.path.join(stationFolder, 'ecoppia_logs','station.log')
-app_log_file_handler = RotatingFileHandler(app_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding='utf-8', delay=0)
+app_log_file = os.path.join(logsFolder, 'station.log')
+app_log_file_handler = RotatingFileHandler(app_log_file, mode='a', maxBytes=1*250*1024, backupCount=1, encoding='utf-8', delay=0)
 app_log_file_handler.setFormatter(log_formatter2)
 app_log_file_handler.setLevel(logging.INFO)
 
@@ -37,7 +38,19 @@ app_log.addHandler(SysLogLibHandler(1, "Ecoppia station"))
 #app_log.addHandler(ch)
 
 
-station_status_log_file = os.path.join(stationFolder, 'ecoppia_logs','EcoppiaStationStatus.txt')
+
+station_upgrade_log_file = os.path.join(logsFolder, 'upgrade.log')
+station_upgrade_log_file_handler = RotatingFileHandler(station_upgrade_log_file, mode='a', maxBytes=1*250*1024, backupCount=1, encoding='utf-8', delay=0)
+station_upgrade_log_file_handler.setFormatter(log_formatter2)
+station_upgrade_log_file_handler.setLevel(logging.INFO)
+
+station_upgrade = logging.getLogger('upgrade')
+station_upgrade.setLevel(logging.INFO)
+station_upgrade.addHandler(station_upgrade_log_file_handler)
+
+
+
+station_status_log_file = os.path.join(logsFolder, 'EcoppiaStationStatus.txt')
 station_status_file_handler = logging.handlers.RotatingFileHandler(station_status_log_file, mode='w', backupCount=5)
 station_status_file_handler.setFormatter(log_formatter)
 station_status_file_handler.setLevel(logging.DEBUG)
@@ -49,8 +62,8 @@ station_status_log.setLevel(logging.DEBUG)
 station_status_log.addHandler(station_status_file_handler)
 
 # Configure Weather logging
-weather_log_file = os.path.join(stationFolder, 'ecoppia_logs','weather.log')
-weather_log_file_handler = RotatingFileHandler(weather_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding=None, delay=0)
+weather_log_file = os.path.join(logsFolder, 'weather.log')
+weather_log_file_handler = RotatingFileHandler(weather_log_file, mode='a', maxBytes=1*250*1024, backupCount=1, encoding=None, delay=0)
 weather_log_file_handler.setFormatter(log_formatter)
 weather_log_file_handler.setLevel(logging.DEBUG)
 
@@ -61,8 +74,8 @@ weather_log.addHandler(weather_log_file_handler)
 
 
 # Configure Tcp logging
-tcp_log_file = os.path.join(stationFolder, 'ecoppia_logs','tcp.log')
-tcp_log_file_handler = RotatingFileHandler(tcp_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding=None, delay=0)
+tcp_log_file = os.path.join(logsFolder, 'tcp.log')
+tcp_log_file_handler = RotatingFileHandler(tcp_log_file, mode='a', maxBytes=1*250*1024, backupCount=1, encoding=None, delay=0)
 tcp_log_file_handler.setFormatter(log_formatter)
 tcp_log_file_handler.setLevel(logging.DEBUG)
 
@@ -73,8 +86,8 @@ tcp_log.addHandler(tcp_log_file_handler)
 
 
 # Configure AWS IOT Sdk logging
-iot_sdk_log_file = os.path.join(stationFolder, 'ecoppia_logs','iot_sdk.log')
-iot_sdk_handler = RotatingFileHandler(iot_sdk_log_file, mode='a', maxBytes=1*250*1024, backupCount=0, encoding=None, delay=0)
+iot_sdk_log_file = os.path.join(logsFolder, 'iot_sdk.log')
+iot_sdk_handler = RotatingFileHandler(iot_sdk_log_file, mode='a', maxBytes=1*250*1024, backupCount=1, encoding=None, delay=0)
 iot_sdk_handler.setFormatter(log_formatter)
 iot_sdk_handler.setLevel(logging.INFO)
 
@@ -85,7 +98,7 @@ iot_log.addHandler(iot_sdk_handler)
 
 # SQLITE
 
-SQLITE_DB_NAME = os.path.join(stationFolder, 'ecoppia_logs','STATION_ACTIVITY.db') 
+SQLITE_DB_NAME = os.path.join(logsFolder,'STATION_ACTIVITY.db') 
 
 # CONFIGURATIONS
 

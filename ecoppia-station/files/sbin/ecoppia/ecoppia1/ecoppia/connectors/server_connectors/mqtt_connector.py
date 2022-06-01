@@ -171,8 +171,7 @@ class MqttConnector:
 
             pkgInfo = json.loads(message.payload, object_hook = self.deserialize)
             app_log.info("in brokerCallback Received " + str(pkgInfo))
-
-            if pkgInfo.version == software_version:
+            if pkgInfo.version == software_version or (pkgInfo.version != software_version and pkgInfo.type == 5):
                 handler = self.handlers.get(pkgInfo.type, None)
                 if handler != None:
                     handler.addPkgToHandlingQueue(pkgInfo)          

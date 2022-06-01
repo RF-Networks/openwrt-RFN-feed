@@ -16,3 +16,10 @@ for reset_pin in (12, 0):
         pin.dir(mraa.DIR_OUT)
     except Exception as ex:
         print('error in reset (pin {}): {}'.format(reset_pin, ex))
+
+# AP: sometimes hard reset just fails, we need a fallback
+print('sleep 7s then reboot!')
+time.sleep(7)
+print('rebooting!')
+os.system('reboot')
+

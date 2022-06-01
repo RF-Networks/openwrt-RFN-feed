@@ -101,8 +101,8 @@ class Station:
 			app_log.fatal("MAIN METHOD - before main_loop_event.wait()")
 			reset_facilitator.main_loop_event.wait()
 			app_log.fatal("MAIN METHOD - after main_loop_event.wait()")
-			sys.exit(1)
-			app_log.fatal("MAIN METHOD - after sys.exit(1)")
+			os._exit(1)
+			app_log.fatal("MAIN METHOD - after os._exit(1)")
 
 		except Exception:
 			app_log.exception("main method failed")
