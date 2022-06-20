@@ -5,7 +5,7 @@ from os.path import isfile, join
 import logging
 from logging.handlers import RotatingFileHandler
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
-from syslog_bridge import SysLogLibHandler
+#from syslog_bridge import SysLogLibHandler
 
 major_unit_version = b'\x03'
 minor_unit_version = b'\x00'
@@ -30,7 +30,7 @@ app_log_file_handler.setLevel(logging.INFO)
 app_log = logging.getLogger('root')
 app_log.setLevel(logging.DEBUG)
 app_log.addHandler(app_log_file_handler)
-app_log.addHandler(SysLogLibHandler(1, "Ecoppia station"))
+#app_log.addHandler(SysLogLibHandler(1, "Ecoppia station"))
 
 #ch = logging.StreamHandler()
 #ch.setLevel(logging.DEBUG)
