@@ -25,7 +25,7 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/$(PKG_NAME)
-  CATEGORY:=RFN
+  CATEGORY:=Bermad
   TITLE:=Bermad-Gateway software
   DEPENDS:=+libstdcpp +zlib +boost-filesystem +RFGSMlib +libserial +libnlsocketscpp +libubox +libuci +libgpiod 
 endef
