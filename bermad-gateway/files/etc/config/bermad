@@ -1,15 +1,19 @@
 
 config server 'server'
-	option serverHost 'devback.bermad.io'
+    option serverHost 'devback.bermad.io'
     option serverPort '5095'
     option smspass '1234'
     option channel '4'
     option cycleSize '0'
     option maxPacketSize '3'
     option enableSimulation '1'
+    option modemDevice '/dev/ttyUSB3'
+    option serverStatsPort '5094'
+    option txPower '14'
+    option rfBaud '0'
 
 config server 'debug'
-	option level '7'
+	option level '6'
 
 config server 'clients'
     option client0 '0'
