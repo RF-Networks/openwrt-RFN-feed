@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Bermad-Gateway
-PKG_VERSION:=0.0.2
+PKG_VERSION:=0.0.3
 PKG_RELEASE=1
 
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/bermadgateway.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=f99a1647ce9c8e6ed98f99821554cc7560245247
+PKG_SOURCE_VERSION:=0f5ebe5f28bc3f1386ec3c919244ec845c1040ce
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -27,7 +27,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/$(PKG_NAME)
   CATEGORY:=Bermad
   TITLE:=Bermad-Gateway software
-  DEPENDS:=+libstdcpp +zlib +boost-filesystem +RFGSMlib +libserial +libnlsocketscpp +libubox +libuci +libgpiod 
+  DEPENDS:=+libstdcpp +zlib +boost-filesystem +RFGSMlib +libserial +libopenssl +libubox +libuci +libgpiod 
 endef
 
 define Package/$(PKG_NAME)/description
