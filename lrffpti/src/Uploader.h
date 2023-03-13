@@ -59,6 +59,7 @@ protected:
 	int err;
 	uint8_t data[FIRMWARE_MAX_SIZE];
 	uint32_t data_crc;
+	unsigned int min_address;
 	unsigned int max_address;
 
 	bool isInBootloader(Device* device);
@@ -82,3 +83,4 @@ public:
 };
 
 #endif /* SRC_UPLOADER_H_ */
+

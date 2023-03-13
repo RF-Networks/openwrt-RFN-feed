@@ -76,3 +76,4 @@ public:
 };
 
 #endif /* SRC_DEVICE_H_ */
+

@@ -186,6 +186,8 @@ int main(int argc, char *argv[]) {
 	dev = DeviceFactory::getDevice(DEVICE_RFN_STAR);
 	if (dev == NULL)
 		manage_failure(fdStream, "lrffpti Device not supported\n");
+	dev->setIsHex(is_hex);
+	dev->setSpeed(deviceSpeed);
 	if (!dev->initialize(fdStream, deviceName))
 		manage_failure(fdStream, "lrffpti Error checking stream\n");
 	isInBootloader = dev->isInBootloader();
@@ -214,8 +216,8 @@ int main(int argc, char *argv[]) {
 					manage_failure(fdStream, "lrffpti Device not supported\n");
 
 				dev->setType(deviceId);
-				dev->setSpeed(deviceSpeed);
 				dev->setIsHex(is_hex);
+				dev->setSpeed(deviceSpeed);
 
 				fdStream.seekg(0, fdStream.beg);
 				if (!dev->initialize(fdStream, deviceName))
@@ -268,4 +270,5 @@ int main(int argc, char *argv[]) {
 	system("mt7688_pinmux set pwm1 gpio");
 	exit(EXIT_SUCCESS);
 }
+
 

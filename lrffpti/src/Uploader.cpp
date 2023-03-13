@@ -40,7 +40,7 @@
 #include "log.h"
 #include <libserial/SerialStream.h>
 
-Uploader::Uploader() :  err(E_SUCCESS), data_crc(0), max_address(0) {
+Uploader::Uploader() :  err(E_SUCCESS), data_crc(0), min_address(0xFFFFFFFF), max_address(0) {
 	rtsdir = new GPIO(RTS_GPIO);
 	rtsdir->Direction(GPIO_OUT);
 	rtsdir->Value(GPIO_HIGH);
@@ -55,6 +55,7 @@ bool Uploader::initializeStream(ifstream &stream, bool is_hex)  {
 	string line;
 	unsigned int address = 0;
 	max_address = 0;
+	min_address = 0xFFFFFFFF;
 	string tmp;
 	if (is_hex) {
 		// Hex file
@@ -69,11 +70,14 @@ bool Uploader::initializeStream(ifstream &stream, bool is_hex)  {
 					data[address + i] = strtol(tmp.substr(i * 2, 2).c_str(), nullptr, 16);
 					if (address + i > max_address)
 						max_address = address + i;
+					if (address < min_address)
+						min_address = address;
 				}
 			}
 		}
 	} else {
 		// Binary file
+		min_address = 0;
 		stream.seekg(0, stream.end);
 		max_address = stream.tellg();
 		stream.seekg(0, stream.beg);
@@ -84,9 +88,10 @@ bool Uploader::initializeStream(ifstream &stream, bool is_hex)  {
 	}
 
 	data_crc = crc32(0L, Z_NULL, 0);
-	data_crc = crc32(data_crc, (const unsigned char*)data, max_address + 1);
+	data_crc = crc32(data_crc, (const unsigned char*)data + min_address, max_address - min_address + 1);
 
-	if (max_address > 0)
+	//ALOGD("Min 0x%08X, Max 0x%08X\n", min_address, max_address);
+	if ((max_address > 0) && (min_address < max_address))
 		err = E_SUCCESS;
 	return (err == E_SUCCESS);
 }
@@ -238,7 +243,7 @@ bool Uploader::compareCRC(Device* device, unsigned int pointer) {
 		return false;
 
 	for (int j = 0; j < 128 * 256; j++)
-		tmp_crc[j] = ((unsigned int)j <= max_address) ? data[j] : 0xFF;
+		tmp_crc[j] = ((unsigned int)j <= max_address - min_address) ? data[j] : 0xFF;
 
 	for (int i = 0; i < 256 * 128; i+=2) {
 		help_a = crc_reg << 1;
@@ -281,7 +286,7 @@ bool Uploader::uploadStream(Device* device) {
 	uint8_t crc_cmd[] = { 0x0F, 0x00, 0x27, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	uint8_t rst_cmd[] = { 0x03, 0x25, 0x25 };
 	uint8_t crc_reply[8];
-	uint32_t pointer = 0, len, chunk_size = 0;
+	uint32_t pointer = min_address, len, chunk_size = 0;
 	int retry = 0;
 	err = E_SUCCESS;
 	ALOGD("Establishing communication...\n");
@@ -299,10 +304,10 @@ bool Uploader::uploadStream(Device* device) {
 		return false;
 	}
 
-	len = max_address + 1;
+	len = max_address - min_address + 1;
 
 	ALOGD("Erasing memory...\n");
-	for (uint32_t i = 0; i < (uint32_t)ceil(len / 4096.0F); i++, pointer += 0x1000) {
+	for (uint32_t i = (pointer / 4096.0F); i < (uint32_t)ceil(max_address / 4096.0F); i++, pointer += 0x1000) {
 		// Erase page
 		ALOGD("Erasing page %d (0x%06X - 0x%06X)\n", i + 1, pointer, pointer + 0xFFF);
 		memcpy(er_cmd + 3, &pointer, 4);
@@ -325,7 +330,7 @@ bool Uploader::uploadStream(Device* device) {
 	ALOGD("Memory erased.\n");
 
 	ALOGD("Flashing firmware %d bytes...\n", len);
-	pointer = 0;
+	pointer = min_address;
 	memcpy(dl_cmd + 3, &pointer, 4);
 	reverse(dl_cmd + 3, dl_cmd + 7);
 	memcpy(dl_cmd + 7, &len, 4);
@@ -346,7 +351,7 @@ bool Uploader::uploadStream(Device* device) {
 
 	do
 	{
-		chunk_size = len - pointer;
+		chunk_size = min_address + len - pointer;
 		if (chunk_size > 252)
 			chunk_size = 252;
 
@@ -375,11 +380,11 @@ bool Uploader::uploadStream(Device* device) {
 			return false;
 		}
 		pointer += chunk_size;
-	} while (pointer < len);
+	} while (pointer < (min_address + len));
 	ALOGD("Firmware flashed %d bytes.\n", pointer);
 
 	ALOGD("Comparing CRC...\n");
-	pointer = 0;
+	pointer = min_address;
 	memcpy(crc_cmd + 3, &pointer, 4);
 	reverse(crc_cmd + 3, crc_cmd + 7);
 	memcpy(crc_cmd + 7, &len, 4);
@@ -411,6 +416,8 @@ bool Uploader::uploadStream(Device* device) {
 	reverse(crc_reply + 4, crc_reply + 8);
 	memcpy(&t_crc, crc_reply + 4, 4);
 
+	ALOGD("CRC Calculated 0x%08X, Received 0x%08X\n", data_crc, t_crc);
+
 	if (t_crc != data_crc) {
 		err = E_CRC_COMPARE_FAILURE;
 		return false;
@@ -437,3 +444,4 @@ bool Uploader::uploadStream(Device* device) {
 	ALOGD("Device has exited flashing mode.\n");
 	return true;
 }
+

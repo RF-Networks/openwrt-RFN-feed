@@ -32,7 +32,7 @@
 #ifndef SRC_LRFFPTI_H_
 #define SRC_LRFFPTI_H_
 
-#define PACKAGE_STRING "lrffpti 1.00.01"
+#define PACKAGE_STRING "lrffpti 1.00.02"
 
 #define VERSION_MSG \
     PACKAGE_STRING "\n" \

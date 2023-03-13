@@ -43,14 +43,15 @@ RFNMeshDevice::~RFNMeshDevice() {
 
 bool RFNMeshDevice::enterBootMode() {
 	uint8_t reply[16];
-	uint8_t enterBootloaderCmd[] = { 0xAB, 0x96, 0x01, 0x0A, 0x12, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xCB, 0x00, 0x00, 0x00, 0x08, 0x7A, 0xCD };
+	uint8_t enterBootloaderCmd[] = { 0xAB, 0x96, 0x02, 0x0A, 0x12, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xCB, 0x00, 0x00, 0x00, 0xEF, 0xAC, 0xF7, 0xCD };
 	memset(reply, 0, sizeof(reply));
 	ALOGW("lrffpti enterBootMode Please wait...\n");
 	memset(reply, 0, sizeof(reply));
 	if (!sendSerialCommand(enterBootloaderCmd, sizeof(enterBootloaderCmd), reply, sizeof(reply))) {
 		return false;
 	}
-	//  AB 96 01 07 13 12 FF FF FF FF 00 00 00 16 7E CD - Reply example
+	//  AB 96 02 07 13 12 FF FF FF FF 00 00 00 16 7E CD - Reply example
 	return (reply[0] == 0xAB && reply[15] == 0xCD && reply[3] == 0x07 && reply[4] == 0x13 && reply[10] == 0x00 && reply[11] == 0x00 && reply[12] == 0x00);
 }
+
 
