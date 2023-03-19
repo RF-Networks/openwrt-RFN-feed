@@ -32,11 +32,11 @@
 #ifndef SRC_LRFFPTI_H_
 #define SRC_LRFFPTI_H_
 
-#define PACKAGE_STRING "lrffpti 1.00.02"
+#define PACKAGE_STRING "lrffpti 1.00.03"
 
 #define VERSION_MSG \
     PACKAGE_STRING "\n" \
-    "Copyright (C) 2017-2019 RF Networks Ltd.\n" \
+    "Copyright (C) 2017-2023 RF Networks Ltd.\n" \
     "All rights reserved.\n\n"
 
 #define HELP_MSG \

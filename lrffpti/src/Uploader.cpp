@@ -54,6 +54,7 @@ Uploader::~Uploader() {
 bool Uploader::initializeStream(ifstream &stream, bool is_hex)  {
 	string line;
 	unsigned int address = 0;
+    unsigned int byte_count = 0;
 	max_address = 0;
 	min_address = 0xFFFFFFFF;
 	string tmp;
@@ -61,12 +62,13 @@ bool Uploader::initializeStream(ifstream &stream, bool is_hex)  {
 		// Hex file
 		while(getline(stream, line)) {
 			address = strtol(line.substr(3, 4).c_str(), nullptr, 16);
+            byte_count = strtol(line.substr(1, 2).c_str(), nullptr, 16);
 			tmp = line.substr(7,2);
 			if (!tmp.compare("01")) {
 				break;
 			} else {
 				tmp = line.substr(9, line.length() - 10);
-				for (int i = 0; i < (int)(tmp.length() / 2); ++i) {
+				for (int i = 0; i < (int)(byte_count / 2); ++i) {
 					data[address + i] = strtol(tmp.substr(i * 2, 2).c_str(), nullptr, 16);
 					if (address + i > max_address)
 						max_address = address + i;
