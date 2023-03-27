@@ -4,6 +4,8 @@ if [ ! -f /etc/crontabs/root ]; then
     touch /etc/crontabs/root
 fi
 
-echo "Adding to crontab"
-echo '* * * * * /bin/sh /root/check_bermad.sh' >> /etc/crontabs/root
+if [ -z "$(grep check_bermad.sh /etc/crontabs/root)" ] ; then
+    echo "Adding to crontab"
+    echo '* * * * * /bin/sh /root/check_bermad.sh' >> /etc/crontabs/root
+fi
 /etc/init.d/cron reload
