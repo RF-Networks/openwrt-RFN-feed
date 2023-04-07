@@ -8,7 +8,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mtk-linkit
   TITLE:=MTK LinkIt Smart board support package
   HIDDEN:=0
-  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
+  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_mediatek_linkit-smart-7688 \
     +gdbserver +curl +strace +coreutils +coreutils-stty \
     +avahi-nodbus-daemon +blockd \
     +uhttpd +uhttpd-mod-ubus +rpcd +rpcd-mod-iwinfo +rpcd-mod-file +git +git-http +samba4-server \

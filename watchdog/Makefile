@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/RFN-Watchdog
   TITLE:=RFN Watchdog
-  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
+  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_mediatek_linkit-smart-7688 \
 		+libpthread +libstdcpp +base-files
 
   CATEGORY:=RFN
