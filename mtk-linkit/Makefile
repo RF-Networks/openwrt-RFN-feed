@@ -27,7 +27,7 @@ define Package/mtk-linkit
 endef
 
 define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
+	    mkdir -p $(PKG_BUILD_DIR)
 endef
 
 define Build/Compile
@@ -36,13 +36,12 @@ define Build/Compile
 endef
 
 define Package/mtk-linkit/install
-	$(INSTALL_DIR) $(1)/sbin
-	
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/pinmux $(1)/sbin/mt7688_pinmux
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/refclk $(1)/sbin/mt7688_reclk
-    mkdir -p $(TOPDIR)/files/etc
-    mkdir -p $(TOPDIR)/files/usr
-	$(CP) ./files/* $(TOPDIR)/files/
+	    $(INSTALL_DIR) $(1)/sbin
+	    $(INSTALL_BIN) $(PKG_BUILD_DIR)/pinmux $(1)/sbin/mt7688_pinmux
+	    $(INSTALL_BIN) $(PKG_BUILD_DIR)/refclk $(1)/sbin/mt7688_reclk
+	    mkdir -p $(TOPDIR)/files/usr
+	    mkdir -p $(TOPDIR)/files/etc
+	    $(CP) ./files/* $(TOPDIR)/files/
 endef
 
 $(eval $(call BuildPackage,mtk-linkit))
