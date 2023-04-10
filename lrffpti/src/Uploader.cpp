@@ -68,7 +68,7 @@ bool Uploader::initializeStream(ifstream &stream, bool is_hex)  {
 				break;
 			} else {
 				tmp = line.substr(9, line.length() - 10);
-				for (int i = 0; i < (int)(byte_count / 2); ++i) {
+				for (int i = 0; i < (int)(byte_count); ++i) {
 					data[address + i] = strtol(tmp.substr(i * 2, 2).c_str(), nullptr, 16);
 					if (address + i > max_address)
 						max_address = address + i;
