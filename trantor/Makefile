@@ -37,7 +37,7 @@ CMAKE_OPTIONS += -DBUILD_SHARED_LIBS:BOOL=ON \
 									-DUSE_SPDLOG:BOOL=OFF
 		
 
-define Package/$(PKG_NAME)/InstallDev
+define Package/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
