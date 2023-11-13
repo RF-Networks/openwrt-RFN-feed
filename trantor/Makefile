@@ -22,7 +22,7 @@ define Package/$(PKG_NAME)
   SECTION:=rfn
   CATEGORY:=RFN
   TITLE:=TRANTOR
-  DEPENDS:=+libstdcpp +libopenssl +libcares
+  DEPENDS:=+libstdcpp +libopenssl +libcares +libatomic
 endef
 
 define Package/$(PKG_NAME)/description
@@ -41,7 +41,7 @@ define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so* $(1)/usr/lib/
 endef
 		
 define Package/$(PKG_NAME)/install
