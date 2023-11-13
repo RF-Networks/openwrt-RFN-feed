@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=trantor
+PKG_NAME:=libtrantor
 PKG_VERSION:=1.5.14
 PKG_RELEASE:=1
 
@@ -35,9 +35,18 @@ CMAKE_OPTIONS += -DBUILD_SHARED_LIBS:BOOL=ON \
 									-DBUILD_C-ARES:BOOL=OFF \
 									-DBUILD_TESTING:BOOL=OFF \
 									-DUSE_SPDLOG:BOOL=OFF
-									
+		
+
+define Package/$(PKG_NAME)/InstallDev
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so $(1)/usr/lib/
+endef
+		
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME).so* $(1)/usr/lib/
 endef
 
 TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include
