@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Sigmatec-Concentrator
-PKG_VERSION:=2.0.10
+PKG_VERSION:=2.0.11
 PKG_RELEASE=1
 
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/concentrator.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=d36f82c4bfdde0a4dbd25c929cf14a5f0772986c
+PKG_SOURCE_VERSION:=230ecf133f7f7d07ed704af22589700dd49574bf
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -22,7 +22,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/$(PKG_NAME)
 	CATEGORY:=Sigmatec
 	TITLE:=Sigmatec-Concentrator software
-	DEPENDS:=+libstdcpp +zlib +boost-filesystem +boost-system +libserial +libnlsocketscpp +libubox +libuci +libgpiod +libsqlite3
+	DEPENDS:=+libstdcpp +zlib +boost-filesystem +boost-system +boost-date_time +libserial +libnlsocketscpp +libubox +libuci +libgpiod +libsqlite3 +smstools3
 endef
 
 define Package/$(PKG_NAME)/description
