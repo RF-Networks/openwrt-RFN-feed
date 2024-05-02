@@ -5,4 +5,4 @@ config server 'server'
 	option serverPort '8854'
 
 config server 'debug'
-	option level '7'
+	option level '6'
