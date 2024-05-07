@@ -2,10 +2,10 @@
 
 if [ ! -f /etc/config/discon ]; then
     touch /etc/config/discon
-	 echo "config server 'server'" >> /etc/config/discon
-	 echo "	option dbPath '/root'" >> /etc/config/discon
-	 echo "	option serverIP '63.33.240.6'" >> /etc/config/discon
-	 echo "	option serverPort '8854'" >> /etc/config/discon
-	 echo "config server 'debug'" >> /etc/config/discon
-	 echo "	option level '6'" >> /etc/config/discon
+    echo "config server 'server'" >> /etc/config/discon
+    echo "      option dbPath '/root'" >> /etc/config/discon
+    echo "      option serverIP '63.33.240.6'" >> /etc/config/discon
+    echo "      option serverPort '8854'" >> /etc/config/discon
+    echo "config server 'debug'" >> /etc/config/discon
+    echo "      option level '6'" >> /etc/config/discon
 fi

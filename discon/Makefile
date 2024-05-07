@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Sigmatec-Concentrator
 PKG_VERSION:=2.0.13
-PKG_RELEASE=1
+PKG_RELEASE=2
 
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/concentrator.git
 PKG_SOURCE_PROTO:=git
