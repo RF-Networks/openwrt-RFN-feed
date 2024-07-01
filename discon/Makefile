@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Sigmatec-Concentrator
-PKG_VERSION:=2.0.14
+PKG_VERSION:=2.0.15
 PKG_RELEASE=1
 
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/concentrator.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=a74dabc6225dce0856f3a5adc5335e9cff7ab270
+PKG_SOURCE_VERSION:=f82e8bf60dddef0b20a840c7aac33bbcbf6351d7
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
