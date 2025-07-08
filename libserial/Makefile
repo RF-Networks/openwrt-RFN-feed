@@ -44,4 +44,7 @@ define Package/libserial/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libserial.so.* $(1)/usr/lib/
 endef
 
+# Add your CMake options here
+CMAKE_OPTIONS += -DLIBSERIAL_ENABLE_TESTING=OFF
+
 $(eval $(call BuildPackage,libserial))
