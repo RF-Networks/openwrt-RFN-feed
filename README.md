@@ -24,7 +24,7 @@ In the Ubuntu system, open the *Terminal* application and type the following com
     ```
     $ git clone https://github.com/RF-Networks/openwrt.git
 	$ cd openwrt
-	$ git checkout openwrt-20.10
+	$ git checkout openwrt-24.10
     ```
     
 3. Prepare the default configuration file for feeds:
