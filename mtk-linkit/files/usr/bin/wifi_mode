@@ -61,16 +61,14 @@ sleep 1
 
 case $1 in
 apsta)
-    set_uci_property network lan type bridge interface
 	set_uci_property network lan netmask 255.255.255.0 interface
 	set_uci_property network lan ipassign 60 interface
 	set_uci_property network lan ipaddr 192.168.100.1 interface
 	set_uci_property network lan proto static interface
 	set_uci_property dhcp lan ignore 0 dhcp
 	set_uci_property dhcp wan ignore 1 dhcp
-	delete_uci_property network wan type
 	delete_uci_property network wan netmask
-	delete_uci_property network wan ip6assign
+	delete_uci_property network wan device
 	delete_uci_property network wan ipaddr
 	set_uci_property network wan proto dhcp interface
 
@@ -79,9 +77,9 @@ apsta)
 	set_uci_property firewall @zone[1] masq 1 zone
 	set_uci_property firewall @zone[1] mtu_fix 1 zone
 
-	set_uci_property wireless sta disabled 0 wifi-iface
+	delete_uci_property wireless sta disabled
 
-	set_uci_property wireless ap disabled 0 wifi-iface
+	delete_uci_property wireless ap disabled
 	set_uci_property wireless ap network 'lan' wifi-iface
 	config_apply network
     config_apply wireless
@@ -92,16 +90,14 @@ apsta)
     fi
     ;;
 sta)
-    set_uci_property network lan type bridge interface
 	set_uci_property network lan netmask 255.255.255.0 interface
 	set_uci_property network lan ipassign 60 interface
 	set_uci_property network lan ipaddr 192.168.100.1 interface
 	set_uci_property network lan proto static interface
 	set_uci_property dhcp lan ignore 0 dhcp
 	set_uci_property dhcp wan ignore 1 dhcp
-	delete_uci_property network wan type
 	delete_uci_property network wan netmask
-	delete_uci_property network wan ip6assign
+	delete_uci_property network wan device
 	delete_uci_property network wan ipaddr
 	set_uci_property network wan proto dhcp interface
 
@@ -110,7 +106,7 @@ sta)
 	set_uci_property firewall @zone[1] masq 1 zone
 	set_uci_property firewall @zone[1] mtu_fix 1 zone
 
-	set_uci_property wireless sta disabled 0 wifi-iface
+	delete_uci_property wireless sta disabled 
 
 	set_uci_property wireless ap disabled 1 wifi-iface
 	set_uci_property wireless ap network 'lan' wifi-iface
@@ -123,16 +119,14 @@ sta)
     fi
     ;;
 ap)
-    set_uci_property network lan type bridge interface
 	set_uci_property network lan netmask 255.255.255.0 interface
 	set_uci_property network lan ipassign 60 interface
 	set_uci_property network lan ipaddr 192.168.100.1 interface
 	set_uci_property network lan proto static interface
 	set_uci_property dhcp lan ignore 0 dhcp
 	set_uci_property dhcp wan ignore 1 dhcp
-	delete_uci_property network wan type
 	delete_uci_property network wan netmask
-	delete_uci_property network wan ip6assign
+	delete_uci_property network wan device
 	delete_uci_property network wan ipaddr
 	set_uci_property network wan proto dhcp interface
 
@@ -143,7 +137,7 @@ ap)
 
 	set_uci_property wireless sta disabled 1 wifi-iface
 
-	set_uci_property wireless ap disabled 0 wifi-iface
+	delete_uci_property wireless ap disabled 
 	set_uci_property wireless ap network 'lan' wifi-iface
 	config_apply network
     config_apply wireless
@@ -155,16 +149,16 @@ ap)
     ;;
 lancli)
     set_uci_property network lan proto dhcp interface
-    delete_uci_property network lan type
     delete_uci_property network lan netmask
     delete_uci_property network lan ip6assign
     delete_uci_property network lan ipaddr
 
-    set_uci_property network wan ifname wlan0 interface
-    set_uci_property network wan netmask 255.255.255.0 interface
-    set_uci_property network wan ip6assign 64 interface
+    set_uci_property network wan device phy0-ap0 interface
+	set_uci_property network wan netmask 255.255.255.0 interface
     set_uci_property network wan ipaddr 192.168.100.1 interface
     set_uci_property network wan proto static interface
+	
+	delete_uci_property dhcp lan ra_slaac
     set_uci_property dhcp wan ignore 0 dhcp
     set_uci_property dhcp wan start 100 dhcp
     set_uci_property dhcp wan limit 150 dhcp
@@ -176,10 +170,10 @@ lancli)
 	set_uci_property firewall @zone[0] masq 1 zone
 	set_uci_property firewall @zone[0] mtu_fix 1 zone
 
+	delete_uci_property wireless ap disabled 
+	set_uci_property wireless ap network 'lan' wifi-iface
     set_uci_property wireless sta disabled 1 wifi-iface
 
-    set_uci_property wireless ap disabled 0 wifi-iface
-    set_uci_property wireless ap network 'lan wan' wifi-iface
     config_apply network
     config_apply wireless
     config_apply dhcp

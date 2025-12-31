@@ -1,7 +1,7 @@
 #!/bin/sh
 
-LDR_VER=`grep UBOOTVER= /dev/mtd0 | cut -d= -f2`
-[ -z "${LDR_VER}" ] && LDR_VER=0.8.2
+LDR_VER=`strings /dev/mtd0 2>/dev/null | grep -m 1 "U-Boot" | awk '{print $2}'`
+[ -z "${LDR_VER}" ] && LDR_VER=1.1.3
 
 uci set system.@system[0].firmware_version=v0.9.4
 uci set system.@system[0].loader_version=v${LDR_VER}

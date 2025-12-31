@@ -2,34 +2,23 @@
 
 modem_turn_on() {
     echo "Turning modem on"
-    echo 14 > /sys/class/gpio/export
-    echo 16 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio14/direction
-    echo out > /sys/class/gpio/gpio16/direction
-
-    echo 0 >  /sys/class/gpio/gpio16/value
-    echo 1 >  /sys/class/gpio/gpio14/value
-    sleep 10
-    echo 0 >  /sys/class/gpio/gpio14/value
-
-    echo 14 > /sys/class/gpio/unexport
-    echo 16 > /sys/class/gpio/unexport    
+	gpioset -z -p 10s -t 0 -c /dev/gpiochip0 16=0
+    gpioset -z -p 10s -t 0 -c /dev/gpiochip0 14=1
+	sleep 10
+	gpioset -z -t 0 -c /dev/gpiochip0 14=0
+	gpioget -c /dev/gpiochip0 14
+	gpioget -c /dev/gpiochip0 16   
 }
 
 modem_turn_off() {
 	echo "Turning modem off"
-    echo 14 > /sys/class/gpio/export
-    echo 16 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio14/direction
-    echo out > /sys/class/gpio/gpio16/direction
-	
-	echo 0 >  /sys/class/gpio/gpio16/value
-    echo 1 >  /sys/class/gpio/gpio14/value
+    gpioset -z -p 4s -t 0 -c /dev/gpiochip0 16=0
+    gpioset -z -p 1s -t 0 -c /dev/gpiochip0 14=1
     sleep 1
-    echo 0 >  /sys/class/gpio/gpio14/value
+    gpioset -z -p 3s -t 0 -c /dev/gpiochip0 14=0
 	sleep 3
-	echo 14 > /sys/class/gpio/unexport
-    echo 16 > /sys/class/gpio/unexport 
+	gpioget -c /dev/gpiochip0 14
+    gpioget -c /dev/gpiochip0 16  
 }
 
 case $1 in

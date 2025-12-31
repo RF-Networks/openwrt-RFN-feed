@@ -249,7 +249,6 @@ print_banner() {
 print_help() {
     print_banner
     echo "Usage: $OPKGUP_NAME [options]
-
 Options:
   -V, --version         Show program name and version and exits
   -h, --help            Show this help screen and exits
@@ -270,12 +269,10 @@ Options:
                         may not find packages if not up to date
   -f, --force           Do not ask for confirmation,
                         will update everything available
-
 Notes:
   - Short options should not be grouped. You must pass each parameter on its own.
   - You must have a working ssmtp install to use the ssmtp functionality. Make
     sure you can send e-mails from it before trying from opkg-upgrade.
-
 Examples:
   $OPKGUP_NAME -n -f      # run without updating listings and asking for upgrade
   $OPKGUP_NAME --install  # install to /usr/sbin/opkg-upgrade
@@ -284,7 +281,6 @@ Examples:
   $OPKGUP_NAME -s 'mail@example.com'    # mail upgrade report if have updates
   $OPKGUP_NAME -a -s 'mail@example.com' # mail upgrade report even if NO updates
   $OPKGUP_NAME -u && echo 'upgrades are available' || echo 'no upgrades available'
-
 "
 }
 

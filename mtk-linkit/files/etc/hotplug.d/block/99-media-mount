@@ -1,0 +1,24 @@
+#!/bin/sh
+# Only run when a device is added
+[ "$ACTION" = "add" ] || exit 0
+
+# Skip the system overlay and rom partitions
+case "$DEVNAME" in
+    loop*|mtdblock*|ubiblock*) exit 0 ;;
+esac
+
+# Define the base path
+BASE_DIR="/Media"
+
+# Ensure the base directory exists
+mkdir -p "$BASE_DIR"
+
+# Create a mount point named after the device (e.g., /Media/sda1)
+MOUNT_POINT="$BASE_DIR/$DEVNAME"
+mkdir -p "$MOUNT_POINT"
+
+# Mount the device
+# The -o sync option is useful for IoT to prevent data loss on pull-out
+mount -o sync "/dev/$DEVNAME" "$MOUNT_POINT"
+
+logger -t hotplug "Auto-mounted /dev/$DEVNAME to $MOUNT_POINT"

@@ -11,8 +11,8 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/RFN-Watchdog
   TITLE:=RFN Watchdog
-  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_LinkIt7688 \
-		+libpthread +libstdcpp +base-files
+  DEPENDS:=@TARGET_ramips_mt76x8_DEVICE_mediatek_linkit-smart-7688 \
+		+libpthread +libstdcpp +base-files +libgpiod
 
   CATEGORY:=RFN
   DEFAULT:=y
@@ -23,7 +23,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 src/GPIO.cpp src/main.cpp -o $(PKG_BUILD_DIR)/rfnwatchdog
+        $(TARGET_CXX) $(TARGET_CXXFLAGS) -pthread -std=c++11 -lgpiod src/main.cpp -o $(PKG_BUILD_DIR)/rfnwatchdog
 endef
 
 define Package/RFN-Watchdog/install

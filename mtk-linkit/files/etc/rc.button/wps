@@ -1,0 +1,42 @@
+#!/bin/sh
+
+[ "${ACTION}" = "released" -o "${ACTION}" = "timeout" ] || exit 21
+
+. /lib/functions.sh
+
+logger "$BUTTON pressed for $SEEN seconds"
+
+# factory reset
+if [ "$SEEN" -gt 20 ]
+then
+	[ -f /tmp/.factory_reset ] && return
+	echo timer > /sys/class/leds/orange\:wifi/trigger
+	echo 100 > /sys/class/leds/orange\:wifi/delay_on
+	echo 100 > /sys/class/leds/orange\:wifi/delay_off
+	touch /tmp/.factory_reset
+	echo "FACTORY RESET" > /dev/console
+	jffs2reset -y
+	sync
+	reboot
+# wifi reset (back to ap mode)
+elif [ "$SEEN" -gt 5 ]
+then
+	echo "START WIFI AP" > /dev/console
+# print wifi information (show mac under ap mode / ip under sta mode
+elif [ "$SEEN" -lt 1 ]
+then
+	ap_mac="$(iwinfo phy0-ap0 info | grep Access | awk '{print $3}')"
+	dev_ip="$(ip addr show phy0-sta0 | awk '/inet / {print $2}' | cut -d/ -f1)"
+	
+	# ap mode. show mac
+	if [[ -n "$ap_mac" ]]; then
+		echo "AP MAC address: $ap_mac" > /dev/console
+	fi
+	# sta mode. show ip
+	if [[ -n "$dev_ip" ]]; then
+		echo "Device Wi-Fi client IP address: $dev_ip" > /dev/console
+	fi
+	
+fi
+
+return 0
