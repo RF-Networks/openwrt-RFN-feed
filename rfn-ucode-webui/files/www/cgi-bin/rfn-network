@@ -1,0 +1,505 @@
+#!/usr/bin/ucode
+// rfn-network - Network Tab Content
+
+import { readfile, writefile, stdin } from "fs";
+
+// Logging function
+function log_message(msg) {
+    let timestamp = sprintf("%d", time());
+    let log_entry = sprintf("[%s] %s\n", timestamp, msg);
+    let log_file = "/tmp/rfn.log";
+    
+    // Append to log file
+    let existing = readfile(log_file) || "";
+    writefile(log_file, existing + log_entry);
+    
+    // Also log to system log
+    system("logger -t rfn '" + replace(msg, "'", "") + "'");
+}
+
+// Session management functions
+function get_cookie(name) {
+    let cookies = getenv("HTTP_COOKIE") || "";
+    let cookie_pairs = split(cookies, "; ");
+    
+    for (let pair in cookie_pairs) {
+        let parts = split(pair, "=");
+        if (parts[0] == name) {
+            return parts[1];
+        }
+    }
+    return null;
+}
+
+function validate_session(session_id) {
+    if (!session_id) return false;
+    
+    // Read session file
+    let session_file = "/tmp/rfn_session_" + session_id;
+    let session_data = readfile(session_file);
+    
+    if (!session_data) return false;
+    
+    // Parse session data (format: username:timestamp)
+    let parts = split(trim(session_data), ":");
+    if (length(parts) != 2) return false;
+    
+    let timestamp = int(parts[1]);
+    let now = time();
+    
+    // Session expires after 1 hour
+    if (now - timestamp > 3600) {
+        system("rm -f " + session_file);
+        return false;
+    }
+    
+    return parts[0]; // Return username
+}
+
+// Check for session
+let session_id = get_cookie("rfn_session");
+let username = validate_session(session_id);
+
+if (!username) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<p>Session expired. Please <a href='/cgi-bin/rfn-login'>login</a> again.</p>");
+    exit(0);
+}
+
+// Handle POST requests
+let request_method = getenv("REQUEST_METHOD");
+
+if (request_method == "POST") {
+    // Read POST data from stdin
+    let content_length = int(getenv("CONTENT_LENGTH") || "0");
+    let post_data = "";
+    
+    if (content_length > 0) {
+        post_data = stdin.read(content_length);
+    }
+    
+    // Parse POST data
+    let params = {};
+    if (post_data) {
+        let pairs = split(post_data, "&");
+        for (let pair in pairs) {
+            let kv = split(pair, "=");
+            if (length(kv) >= 2) {
+                params[kv[0]] = kv[1];
+            } else if (length(kv) == 1) {
+                params[kv[0]] = "";
+            }
+        }
+    }
+    
+    // Handle WiFi scan
+    if (params.action == "scan_wifi") {
+        // JSON escape function
+        function jsonEscape(str) {
+            if (!str) return "";
+            str = replace(str, "\\", "\\\\");
+            str = replace(str, '"', '\\"');
+            str = replace(str, "\n", "\\n");
+            str = replace(str, "\r", "\\r");
+            str = replace(str, "\t", "\\t");
+            return str;
+        }
+        
+        // Scan for WiFi networks
+        let scan_file = "/tmp/rfn_wifi_scan_" + time();
+        
+        // Try phy0-ap0 first
+        system("iw dev phy0-ap0 scan 2>/dev/null | grep -E '^(BSS |[[:space:]]+SSID:|[[:space:]]+signal:|[[:space:]]+capability:|[[:space:]]+(WPA|RSN):)' > " + scan_file);
+        
+        let scan_data = readfile(scan_file);
+        
+        // If phy0-ap0 doesn't exist or produces no results, try phy0-sta0
+        if (!scan_data || trim(scan_data) == "") {
+            system("iw dev phy0-sta0 scan 2>/dev/null | grep -E '^(BSS |[[:space:]]+SSID:|[[:space:]]+signal:|[[:space:]]+capability:|[[:space:]]+(WPA|RSN):)' > " + scan_file);
+            scan_data = readfile(scan_file);
+        }
+        
+        system("rm -f " + scan_file);
+        
+        let networks = [];
+        
+        if (scan_data) {
+            let lines = split(scan_data, "\n");
+            let current_network = null;
+            
+            for (let line in lines) {
+                line = trim(line);
+                
+                if (index(line, "BSS ") == 0) {
+                    // Extract BSS address for hidden networks
+                    let bss_parts = split(line, " ");
+                    if (length(bss_parts) > 1) {
+                        let bss_addr = bss_parts[1];
+                        // Remove trailing characters like (on phy0-ap0)
+                        let paren_pos = index(bss_addr, "(");
+                        if (paren_pos >= 0) {
+                            bss_addr = substr(bss_addr, 0, paren_pos);
+                        }
+                        // Store BSS for potential hidden network
+                        if (current_network) {
+                            push(networks, current_network);
+                        }
+                        current_network = {
+                            ssid: bss_addr,
+                            signal: 0,
+                            encrypted: false,
+                            is_hidden: true
+                        };
+                    }
+                } else if (index(line, "SSID:") >= 0) {
+                    let ssid = trim(substr(line, index(line, "SSID:") + 5));
+                    // Check for hidden network (null bytes)
+                    let is_null_ssid = true;
+                    for (let i = 0; i < length(ssid); i++) {
+                        if (substr(ssid, i, 1) != "\x00") {
+                            is_null_ssid = false;
+                            break;
+                        }
+                    }
+                    
+                    if (ssid && ssid != "" && !is_null_ssid) {
+                        if (current_network && current_network.is_hidden) {
+                            // Update hidden network with actual SSID
+                            current_network.ssid = ssid;
+                            current_network.is_hidden = false;
+                        } else {
+                            if (current_network) {
+                                push(networks, current_network);
+                            }
+                            current_network = {
+                                ssid: ssid,
+                                signal: 0,
+                                encrypted: false,
+                                is_hidden: false
+                            };
+                        }
+                    }
+                } else if (index(line, "signal:") >= 0 && current_network) {
+                    let signal_str = trim(substr(line, index(line, "signal:") + 7));
+                    let signal_parts = split(signal_str, " ");
+                    if (length(signal_parts) > 0) {
+                        let signal_dbm = int(signal_parts[0]);
+                        // Convert dBm to percentage (rough approximation)
+                        // -30 dBm = 100%, -90 dBm = 0%
+                        current_network.signal = int((signal_dbm + 90) * 100 / 60);
+                        if (current_network.signal > 100) current_network.signal = 100;
+                        if (current_network.signal < 0) current_network.signal = 0;
+                    }
+                } else if ((index(line, "WPA:") >= 0 || index(line, "RSN:") >= 0) && current_network) {
+                    // Network has WPA/WPA2/WPA3 encryption
+                    current_network.encrypted = true;
+                } else if (index(line, "capability:") >= 0 && current_network) {
+                    // Check for Privacy bit in capability
+                    if (index(line, "Privacy") >= 0) {
+                        current_network.encrypted = true;
+                    }
+                }
+            }
+            
+            // Add the last network if exists
+            if (current_network) {
+                push(networks, current_network);
+            }
+        }
+        
+        // Remove duplicate networks (keep first occurrence)
+        let unique_networks = [];
+        let seen_ssids = {};
+        for (let network in networks) {
+            if (!seen_ssids[network.ssid]) {
+                push(unique_networks, network);
+                seen_ssids[network.ssid] = true;
+            }
+        }
+        networks = unique_networks;
+        
+        // Sort networks by signal strength
+        // Simple bubble sort since we don't have a built-in sort
+        for (let i = 0; i < length(networks) - 1; i++) {
+            for (let j = 0; j < length(networks) - i - 1; j++) {
+                if (networks[j].signal < networks[j + 1].signal) {
+                    let temp = networks[j];
+                    networks[j] = networks[j + 1];
+                    networks[j + 1] = temp;
+                }
+            }
+        }
+        
+        print("Content-Type: application/json\r\n\r\n");
+        print('{"success": true, "networks": [');
+        let first = true;
+        for (let network in networks) {
+            if (!first) print(',');
+            print('{"ssid":"' + jsonEscape(network.ssid) + '","signal":' + network.signal + ',"encrypted":' + (network.encrypted ? 'true' : 'false') + '}');
+            first = false;
+        }
+        print(']}');
+        exit(0);
+    }
+    
+    // Handle network configuration apply
+    if (params.action == "apply_config") {
+        // URL decode function
+        log_message("=== Applying network configuration ===");
+        function urlDecode(str) {
+            if (!str) return "";
+            str = replace(str, "+", " ");
+            // Handle %XX encoding
+            let result = "";
+            let i = 0;
+            while (i < length(str)) {
+                if (substr(str, i, 1) == "%" && i + 2 < length(str)) {
+                    let hex = substr(str, i + 1, 2);
+                    // Convert hex to decimal
+                    let char_code = 0;
+                    for (let j = 0; j < length(hex); j++) {
+                        let digit = substr(hex, j, 1);
+                        let val = 0;
+                        if (digit >= '0' && digit <= '9') val = ord(digit) - ord('0');
+                        else if (digit >= 'A' && digit <= 'F') val = ord(digit) - ord('A') + 10;
+                        else if (digit >= 'a' && digit <= 'f') val = ord(digit) - ord('a') + 10;
+                        char_code = char_code * 16 + val;
+                    }
+                    result += chr(char_code);
+                    i += 3;
+                } else {
+                    result += substr(str, i, 1);
+                    i += 1;
+                }
+            }
+            return result;
+        }
+        
+        // Decode parameters
+        let lan_mode = urlDecode(params.lan_mode || "");
+        let wifi_mode = urlDecode(params.wifi_mode || "");
+        let wifi_network = urlDecode(params.wifi_network || "");
+        let wifi_password = urlDecode(params.wifi_password || "");
+        let wifi_encryption = urlDecode(params.wifi_encryption || "none");
+        let cellular_apn = urlDecode(params.cellular_apn || "");
+        let cellular_pin = urlDecode(params.cellular_pin || "");
+        let cellular_username = urlDecode(params.cellular_username || "");
+        let cellular_password = urlDecode(params.cellular_password || "");
+        
+        // Apply WiFi configuration if in station or repeater mode
+        if (wifi_mode == "station" || wifi_mode == "repeater") {
+            if (wifi_password) {
+                system("uci set wireless.sta.key='" + wifi_password + "'");
+            }
+            if (wifi_encryption != "none") {
+                system("uci set wireless.sta.encryption='" + wifi_encryption + "'");
+            } else {
+                system("uci set wireless.sta.encryption='none'");
+            }
+            if (wifi_network) {
+                system("uci set wireless.sta.ssid='" + wifi_network + "'");
+            }
+            system("uci commit wireless");
+        }
+        
+        // Apply cellular configuration if values are provided
+        if (cellular_apn) {
+            system("uci set network.4G.apn='" + cellular_apn + "'");
+        }
+        if (cellular_pin) {
+            system("uci set network.4G.pincode='" + cellular_pin + "'");
+        }
+        if (cellular_username) {
+            system("uci set network.4G.username='" + cellular_username + "'");
+        }
+        if (cellular_password) {
+            system("uci set network.4G.password='" + cellular_password + "'");
+        }
+        if (cellular_apn || cellular_pin || cellular_username || cellular_password) {
+            system("uci commit network");
+        }
+        
+        // Determine wifi_mode command based on configuration
+        let wifi_mode_cmd = "";
+        if (lan_mode == "station") {
+            wifi_mode_cmd = "lancli";
+        } else if (lan_mode == "ap") {
+            if (wifi_mode == "ap") {
+                wifi_mode_cmd = "ap";
+            } else if (wifi_mode == "station") {
+                wifi_mode_cmd = "sta";
+            } else if (wifi_mode == "repeater") {
+                wifi_mode_cmd = "apsta";
+            } else {
+                wifi_mode_cmd = "ap"; // default
+            }
+        } else {
+            wifi_mode_cmd = "ap"; // default
+        }
+        
+        // Apply wifi_mode command and schedule reboot
+        log_message("=== Apply WiFi Mode and Reboot ===");
+        system("(wifi_mode " + wifi_mode_cmd + " && sleep 2 && reboot -f) &");
+        
+        print("Content-Type: application/json\r\n\r\n");
+        print('{"success": true, "message": "Configuration applied, device restarting..."}');
+        exit(0);
+    }
+    
+    print("Content-Type: application/json\r\n\r\n");
+    print('{"success": false, "error": "Invalid request"}');
+    exit(1);
+}
+
+// GET request - show network configuration page
+
+// Get network information - using simple defaults for now
+let ip_address = "192.168.1.1";
+let netmask = "255.255.255.0";
+let gateway = "192.168.1.1";
+let dns_server = "8.8.8.8";
+let ssid = "RFN-Gateway";
+let wifi_status = "Active";
+
+// Check for cellular interface availability
+let cellular_available = "none";
+let temp_file = "/tmp/rfn_cellular_check_" + time();
+
+// Check for common 4G interface names
+system("(ip link show wwan0 2>/dev/null || ip link show usb0 2>/dev/null || ip link show eth1 2>/dev/null) | grep -q . && echo 'found' > " + temp_file);
+let cellular_check = readfile(temp_file);
+if (cellular_check && trim(cellular_check) == "found") {
+    cellular_available = "block";
+}
+system("rm -f " + temp_file);
+
+// Read cellular configuration (if available)
+let cellular_apn = "";
+let cellular_pin = "";
+let cellular_username = "";
+let cellular_password = "";
+
+// Load cellular values from UCI
+temp_file = "/tmp/rfn_uci_" + time();
+
+system("uci get network.4G.apn 2>/dev/null > " + temp_file);
+let apn_data = readfile(temp_file);
+if (apn_data) {
+    cellular_apn = trim(apn_data);
+}
+
+system("uci get network.4G.pincode 2>/dev/null > " + temp_file);
+let pin_data = readfile(temp_file);
+if (pin_data) {
+    cellular_pin = trim(pin_data);
+}
+
+system("uci get network.4G.username 2>/dev/null > " + temp_file);
+let username_data = readfile(temp_file);
+if (username_data) {
+    cellular_username = trim(username_data);
+}
+
+system("uci get network.4G.password 2>/dev/null > " + temp_file);
+let password_data = readfile(temp_file);
+if (password_data) {
+    cellular_password = trim(password_data);
+}
+
+system("rm -f " + temp_file);
+
+// Read current LAN and WiFi modes from UCI configuration
+let lan_mode = "ap";
+let wifi_mode = "ap";
+
+temp_file = "/tmp/rfn_mode_" + time();
+
+// Check LAN mode from network.lan.proto
+system("uci get network.lan.proto 2>/dev/null > " + temp_file);
+let lan_proto = readfile(temp_file);
+if (lan_proto && trim(lan_proto) == "dhcp") {
+    lan_mode = "station";
+} else {
+    lan_mode = "ap";
+}
+
+// Check WiFi mode from wireless configuration
+// First check if wireless.sta is disabled
+system("uci get wireless.sta.disabled 2>/dev/null > " + temp_file);
+let sta_disabled = readfile(temp_file);
+
+if (sta_disabled && trim(sta_disabled) == "1") {
+    // STA is disabled, so wifi mode is AP
+    wifi_mode = "ap";
+} else {
+    // STA is enabled, check wireless.ap.network to determine if it's repeater or station mode
+    system("uci get wireless.ap.network 2>/dev/null > " + temp_file);
+    let ap_network = readfile(temp_file);
+    
+    if (ap_network && trim(ap_network) == "lan") {
+        // AP network is connected to lan, this is repeater mode (apsta)
+        wifi_mode = "repeater";
+    } else {
+        // AP network is not lan, this is station mode (sta)
+        wifi_mode = "station";
+    }
+}
+
+system("rm -f " + temp_file);
+
+// Read current WiFi SSID
+let current_wifi_ssid = "";
+temp_file = "/tmp/rfn_ssid_" + time();
+system("uci get wireless.sta.ssid 2>/dev/null > " + temp_file);
+let ssid_data = readfile(temp_file);
+if (ssid_data) {
+    current_wifi_ssid = trim(ssid_data);
+}
+
+// Read current WiFi password
+let current_wifi_password = "";
+system("uci get wireless.sta.key 2>/dev/null > " + temp_file);
+let password_data = readfile(temp_file);
+if (password_data) {
+    current_wifi_password = trim(password_data);
+}
+
+system("rm -f " + temp_file);
+
+// Read template file
+let template = readfile("/www/templates/rfn/network.html");
+
+if (!template) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<p>Error: Template not found</p>");
+    exit(1);
+}
+
+// Replace template variables
+template = replace(template, "{{ username }}", username);
+template = replace(template, "{{ ip_address }}", ip_address);
+template = replace(template, "{{ netmask }}", netmask);
+template = replace(template, "{{ gateway }}", gateway);
+template = replace(template, "{{ dns_server }}", dns_server);
+template = replace(template, "{{ ssid }}", ssid);
+template = replace(template, "{{ wifi_status }}", wifi_status);
+template = replace(template, "{{ cellular_available }}", cellular_available);
+template = replace(template, "{{ cellular_apn }}", cellular_apn);
+template = replace(template, "{{ cellular_pin }}", cellular_pin);
+template = replace(template, "{{ cellular_username }}", cellular_username);
+template = replace(template, "{{ cellular_password }}", cellular_password);
+
+// Set checked attributes for radio buttons
+template = replace(template, "{{ lan_mode_ap_checked }}", lan_mode == "ap" ? "checked" : "");
+template = replace(template, "{{ lan_mode_station_checked }}", lan_mode == "station" ? "checked" : "");
+template = replace(template, "{{ wifi_mode_ap_checked }}", wifi_mode == "ap" ? "checked" : "");
+template = replace(template, "{{ wifi_mode_station_checked }}", wifi_mode == "station" ? "checked" : "");
+template = replace(template, "{{ wifi_mode_repeater_checked }}", wifi_mode == "repeater" ? "checked" : "");
+template = replace(template, "{{ current_wifi_ssid }}", current_wifi_ssid);
+template = replace(template, "{{ current_wifi_password }}", current_wifi_password);
+template = replace(template, "{{ wifi_network_display }}", (wifi_mode == "station" || wifi_mode == "repeater") ? "block" : "none");
+
+// HTTP Headers and output
+print("Content-Type: text/html; charset=utf-8\r\n");
+print("\r\n");
+print(template);

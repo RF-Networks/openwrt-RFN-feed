@@ -1,0 +1,297 @@
+<h3>Network Settings</h3>
+<div class="info-section">
+    <div class="config-group">
+        <label class="config-label">LAN Mode:</label>
+        <div class="radio-group">
+            <label class="radio-option">
+                <input type="radio" name="lan-mode" value="ap" id="lan-mode-ap" {{ lan_mode_ap_checked }}>
+                <span>AP Mode</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="lan-mode" value="station" id="lan-mode-station" {{ lan_mode_station_checked }}>
+                <span>Station Mode</span>
+            </label>
+        </div>
+    </div>
+    
+    <div class="config-group">
+        <label class="config-label">Wi-Fi Configuration:</label>
+        <div class="radio-group">
+            <label class="radio-option">
+                <input type="radio" name="wifi-mode" value="ap" id="wifi-mode-ap" onchange="updateWiFiMode()" {{ wifi_mode_ap_checked }}>
+                <span>AP Mode</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="wifi-mode" value="station" id="wifi-mode-station" onchange="updateWiFiMode()" {{ wifi_mode_station_checked }}>
+                <span>Station Mode</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="wifi-mode" value="repeater" id="wifi-mode-repeater" onchange="updateWiFiMode()" {{ wifi_mode_repeater_checked }}>
+                <span>Repeater Mode</span>
+            </label>
+        </div>
+    </div>
+    <script>
+        console.log('Setting up Wi-Fi mode change handler');
+        // Call updateWiFiMode after a brief delay to ensure DOM is ready
+        if (typeof updateWiFiMode === 'function') {
+            updateWiFiMode();
+        } else {
+            setTimeout(function() {
+                if (typeof updateWiFiMode === 'function') {
+                    updateWiFiMode();
+                }
+            }, 100);
+        }
+    </script>
+    
+    <div class="config-group" id="wifi-network-group" style="display: {{ wifi_network_display }};">
+        <label class="config-label">Available Networks:</label>
+        <div class="network-select-container">
+            <select id="wifi-networks" class="network-select" onchange="checkPasswordRequired()">
+                <option value="">-- Scan for networks --</option>
+            </select>
+            <button type="button" class="refresh-btn" onclick="scanWiFiNetworks()">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                    <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+                </svg>
+                Refresh
+            </button>
+        </div>
+    </div>
+    <script>
+        // Set current SSID if available
+        currentSsid = '{{ current_wifi_ssid }}';
+        if (currentSsid) {
+            var select = document.getElementById('wifi-networks');
+            var option = document.createElement('option');
+            option.value = currentSsid;
+            option.textContent = currentSsid + ' (current)';
+            option.selected = true;
+            select.appendChild(option);
+        }
+    </script>
+    
+    <div class="config-group" id="wifi-password-group" style="display: none;">
+        <label class="config-label">Network Password:</label>
+        <div class="password-input-container">
+            <input type="password" id="wifi-password" class="config-input" placeholder="Enter network password" value="{{ current_wifi_password }}">
+            <button type="button" class="toggle-password-btn" onclick="togglePassword('wifi-password')" title="Show/Hide Password">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="cellular-section" style="display: {{ cellular_available }};">
+    <h3>Cellular</h3>
+    <div class="info-section">
+        <div class="config-group">
+            <label class="config-label">APN:</label>
+            <input type="text" id="cellular-apn" class="config-input" placeholder="Enter APN" value="{{ cellular_apn }}">
+        </div>
+        
+        <div class="config-group">
+            <label class="config-label">PIN:</label>
+            <input type="text" id="cellular-pin" class="config-input" placeholder="Enter PIN (optional)" value="{{ cellular_pin }}">
+        </div>
+        
+        <div class="config-group">
+            <label class="config-label">Username:</label>
+            <input type="text" id="cellular-username" class="config-input" placeholder="Enter username (optional)" value="{{ cellular_username }}">
+        </div>
+        
+        <div class="config-group">
+            <label class="config-label">Password:</label>
+            <div class="password-input-container">
+                <input type="password" id="cellular-password" class="config-input" placeholder="Enter password (optional)" value="{{ cellular_password }}">
+                <button type="button" class="toggle-password-btn" onclick="togglePassword('cellular-password')" title="Show/Hide Password">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="button-group">
+    <button type="button" class="cancel-btn" onclick="cancelNetworkConfig()">Cancel</button>
+    <button type="button" class="save-btn" onclick="applyNetworkConfig()">Configure & Restart</button>
+</div>
+
+<style>
+.info-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.config-group {
+    margin-bottom: 20px;
+}
+
+.config-group:last-child {
+    margin-bottom: 0;
+}
+
+.config-label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.radio-option span {
+    user-select: none;
+}
+
+.config-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.config-input:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+.network-select-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.network-select {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+.network-select:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.refresh-btn:hover {
+    background-color: #1976D2;
+}
+
+.button-group {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.save-btn {
+    padding: 12px 24px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.save-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-btn {
+    padding: 12px 24px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-container .config-input {
+    padding-right: 45px;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.toggle-password-btn:hover {
+    color: #333;
+}
+
+.toggle-password-btn svg {
+    display: block;
+}
+</style>

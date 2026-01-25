@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="/templates/rfn/main.css" rel="stylesheet">
+    <script type="text/javascript" src="/templates/rfn/main.js"></script>
+    <meta name="description" content="RF-Network gateway configuration UI">
+	<link rel="shortcut icon" type="image/x-icon" href="/templates/rfn/favicon.ico" />
+    <meta name="author" content="RF-Network">
+    <title>RF-Networks</title>
+	<style>	
+		.block {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			background-color: #FAFAFA;
+			align-items: center;
+			@media (max-width: 790px) {
+			  padding-left: 10px;
+			  padding-right: 10px;
+			};
+			border: 1px solid #D1D2D3;
+		}
+		
+		.welcomeTitle {
+			line-height: 35px;
+			@media (max-width: 790px) {
+				width: 100%;
+			};
+		}
+
+		.welcomeTitleLine {
+			@media (max-width: 790px) {
+				margin-top: -20px;
+			};
+		}
+		
+		.img {
+			width: 188px;
+			margin-top: 15px;
+		}
+		
+		.header {
+			width: 100%;
+			height: 120px;
+			box-sizing: border-box;
+			-webkit-tap-highlight-color: rgba(0,0,0,0);
+			z-index: 99;
+			position: fixed;
+			background: #fff;
+			box-shadow: 1px 2px 1px 0 rgba(0,0,0,0.1), 0 0 0 rgba(0,0,0,0.1);
+	    }
+		
+		.container {
+			display: flex;
+			flex-direction: row;
+			height: 105px;
+			line-height: 60px;
+			justify-content: space-between;
+			max-width: 800px;
+			margin: 0 auto;
+			@media (max-width: 790px) {
+			  padding-left: 10px;
+			  padding-right: 10px;
+			};
+		}
+		
+		.logout-btn {
+			color: #4caf50;
+			text-decoration: none;
+			cursor: pointer;
+			margin: 22px 30px;
+		}
+		
+		.tabs-container {
+            width: 100%;
+			max-width: 800px;
+			margin: 20px auto;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+		}
+		
+		.tabs {
+			display: flex;
+			background-color: rgb(76, 175, 80);
+			border-radius: 5px 5px 0 0;
+			overflow: hidden;
+            color: rgb(255, 255, 255);
+		}
+		
+		.tab {
+			flex: 1;
+			padding: 15px 20px;
+			background-color: #4caf50;
+			color: white;
+			text-align: center;
+			cursor: pointer;
+			border: none;
+			font-size: 16px;
+			font-weight: 500;
+			transition: background-color 0.3s;
+		}
+		
+		.tab:hover {
+			background-color: #45a049;
+		}
+		
+		.tab.active {
+			background-color: #388e3c;
+		}
+		
+		.tab-content {
+			display: none;
+			padding: 30px;
+			background-color: white;
+			border: 1px solid #e0e0e0;
+			border-top: none;
+			border-radius: 0 0 8px 8px;
+			min-height: 300px;
+		}
+		
+		.tab-content.active {
+			display: block;
+		}
+    </style>
+</head>
+<body style="margin:0px; padding:0px;">
+	<div>
+		<div>
+			<header class="header">
+				<div class="container">
+					<img class="img" src="/templates/rfn/img/rf-networks.png"/>
+					
+					<a href="/cgi-bin/rfn-logout" class="logout-btn">Sign out</a>
+				</div>
+			</header>
+		</div>
+		<div class="frame">
+			<div class="block" style="border: none;">
+				<header style="width: 100%; display: flex; max-width: 800px; margin-top: 120px; justify-content: space-between;">
+					<p class="welcomeTitle">Welcome to <b>RFN Smart Gateway</b></p>
+					<p class="welcomeTitle welcomeTitleLine ">For advanced network configuration, go to <a style="color: #00a1de; text-decoration: none;" href="/cgi-bin/luci">OpenWrt</a>.</p>
+				</header>
+
+                <div class="tabs-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="openTab(event, 'system-info')">System Information</button>
+                        <button class="tab" onclick="openTab(event, 'network')">Network</button>
+                        <button class="tab" onclick="openTab(event, 'configuration')">Configuration</button>
+                    </div>
+                    
+                    <div id="tab-content-container" class="tab-content active">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

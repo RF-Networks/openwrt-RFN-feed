@@ -1,0 +1,150 @@
+#!/usr/bin/ucode
+// rfn-login - Login page for RFN
+// Place this file at: /www/cgi-bin/rfn-login
+
+import { readfile, writefile, open, popen } from "fs";
+import { connect } from "ubus";
+
+// Logging function
+function log_message(msg) {
+    let timestamp = sprintf("%d", time());
+    let log_entry = sprintf("[%s] %s\n", timestamp, msg);
+    let log_file = "/tmp/rfn.log";
+    
+    // Append to log file
+    let existing = readfile(log_file) || "";
+    writefile(log_file, existing + log_entry);
+    
+    // Also log to system log
+    system("logger -t rfn '" + replace(msg, "'", "") + "'");
+}
+
+log_message("=== Login page accessed ===");
+log_message("REQUEST_METHOD: " + (getenv("REQUEST_METHOD") || "undefined"));
+log_message("HTTP_COOKIE: " + (getenv("HTTP_COOKIE") || "none"));
+log_message("CONTENT_LENGTH: " + (getenv("CONTENT_LENGTH") || "0"));
+
+let request_method = getenv("REQUEST_METHOD");
+let error_message = "";
+
+if (request_method == "POST") {
+    log_message("POST request received");
+    
+    // Read POST data from stdin
+    let content_length = int(getenv("CONTENT_LENGTH") || "0");
+    let post_data = "";
+    
+    log_message("Content-Length: " + content_length);
+    
+    if (content_length > 0) {
+        post_data = "";
+        let input = open("/dev/stdin", "r");
+        if (input) {
+            post_data = input.read(content_length);
+            input.close();
+        }
+        log_message("POST data received: " + post_data);
+    } else {
+        log_message("No POST data (content_length = 0)");
+    }
+    
+    // Parse POST data
+    let params = {};
+    let pairs = split(post_data, "&");
+    log_message("Parsing " + length(pairs) + " parameter pairs");
+    
+    for (let pair in pairs) {
+        let kv = split(pair, "=");
+        if (length(kv) == 2) {
+            // Basic URL decode
+            let key = kv[0];
+            let value = kv[1];
+            // Replace + with space
+            value = replace(value, "+", " ");
+            // Decode %XX
+            value = replace(value, /%([0-9A-Fa-f]{2})/g, (m, hex) => {
+                return chr(int(hex, 16));
+            });
+            params[key] = value;
+            log_message("Param: " + key + " = " + (key == "password" ? "****" : value));
+        }
+    }
+    
+    let username = params.username || "root";
+    let password = params.password || "";
+    
+    log_message("Attempting authentication for user: " + username);
+    
+    // Validate credentials using ubus/rpcd
+    let authenticated = false;
+    
+    let conn = connect();
+    let session_data = conn.call("session", "login", { 
+        username: username, 
+        password: password 
+    });
+    if (session_data && session_data.ubus_rpc_session) {
+        authenticated = true;
+        log_message("Login success. Token: " + session_data.ubus_rpc_session);
+    } else {
+        log_message("Login failed: " + (session_data ? "Invalid credentials" : "Ubus call failed"));
+    }
+    
+    if (authenticated) {
+        // Generate session ID using random data
+        log_message("Generating session ID...");
+        let rand_result = popen("head -c 16 /dev/urandom | hexdump -e '16/1 \"%02x\"'");
+        let session_id = "";
+        if (rand_result) {
+            session_id = trim(rand_result.read("all"));
+            rand_result.close();
+            log_message("Generated session ID: " + session_id);
+        }
+        
+        if (!session_id) {
+            session_id = sprintf("%d%d", time(), rand());
+            log_message("Fallback session ID: " + session_id);
+        }
+        
+        // Store session
+        let session_file = "/tmp/rfn_session_" + session_id;
+        let session_data = username + ":" + time();
+        writefile(session_file, session_data);
+        log_message("Session stored in: " + session_file);
+        log_message("Session data: " + session_data);
+        
+        // Set cookie and redirect
+        log_message("Setting cookie and redirecting to /cgi-bin/rfn");
+        print("Status: 302 Found\r\n");
+        print("Set-Cookie: rfn_session=" + session_id + "; Path=/; HttpOnly\r\n");
+        print("Location: /cgi-bin/rfn\r\n");
+        print("\r\n");
+        exit(0);
+    } else {
+        error_message = "Invalid username or password";
+        log_message("Login failed - showing error message");
+    }
+}
+
+// Display login form
+log_message("Displaying login form");
+
+// Read template
+let template = readfile("/www/templates/rfn/login.html");
+
+if (!template) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<h1>Error: Template not found</h1>");
+    exit(1);
+}
+
+// Replace error message placeholder
+let error_block = "";
+if (error_message) {
+    error_block = `<div class="error-message">${error_message}</div>`;
+}
+template = replace(template, "{{ error_block }}", error_block);
+
+print("Content-Type: text/html; charset=utf-8\r\n");
+print("\r\n");
+print(template);

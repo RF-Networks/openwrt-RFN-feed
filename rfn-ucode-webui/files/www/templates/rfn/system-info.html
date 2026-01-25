@@ -1,0 +1,157 @@
+<h3>Platform Information</h3>
+<div class="info-section">
+    <div class="info-item">
+        <span class="info-label">Distribution:</span>
+        <span class="info-value">{{ distrib_id }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Release:</span>
+        <span class="info-value">{{ distrib_release }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Description:</span>
+        <span class="info-value">{{ distrib_description }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Hostname:</span>
+        <span class="info-value">{{ hostname }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Current IP address:</span>
+        <span class="info-value">{{ ip_address }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Uptime:</span>
+        <span class="info-value">{{ uptime }}</span>
+    </div>
+</div>
+
+<h3>Account Information</h3>
+<div class="info-section">
+    <div class="info-item">
+        <span class="info-label">Account:</span>
+        <span class="info-value">root(default)</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Password:</span>
+        <span class="info-value" id="password-display">********</span>
+        <input type="password" id="password-input" class="password-input" style="display: none;" placeholder="Enter new password">
+    </div>
+    <div id="button-container">
+        <button type="button" class="save-btn" id="configure-btn" onclick="enableEdit()">Configure</button>
+        <div id="edit-buttons" style="display: none;">
+            <button type="button" class="cancel-btn" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+            <button type="button" class="cancel-btn" id="configure-restart-btn" onclick="configureAndRestart()">Configure&Restart</button>
+        </div>
+    </div>
+</div>
+
+<div style="border-top: 1px solid rgba(0, 0, 0, 0.12); margin-top: 20px; margin-bottom: 0px;"></div>
+
+<h3>Factory Reset</h3>
+<p data-radium="true" style="margin-bottom: 0px;">Reset the device to its default settings.</p>
+<b data-radium="true" style="color: rgb(219, 68, 55);">Important: This action will remove all your data and settings from the device.</b>
+<button type="button" class="save-btn" id="factory-reset-btn" style="margin-top: 20px !important;" onclick="factoryReset()">Reset</button>
+
+<style>
+.info-section {
+    margin-top: 20px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.info-value {
+    color: #333;
+    font-family: 'Courier New', monospace;
+}
+
+.password-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 250px;
+    font-family: 'Courier New', monospace;
+}
+
+.password-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+#button-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+#edit-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.save-btn {
+    width: 100%;
+    text-align: center;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(76, 175, 80);
+    padding: 6px 8px;
+    font-size: 0.875rem;
+    min-width: 64px;
+    box-sizing: border-box;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
+    line-height: 1.75;
+    border-radius: 4px;
+    letter-spacing: 0.02857em;
+    text-transform: uppercase;
+    border-width: 0;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    width: 226px;
+    flex-grow: 1;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(76, 175, 80);
+    padding: 6px 8px;
+    font-size: 0.875rem;
+    min-width: 64px;
+    box-sizing: border-box;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
+    line-height: 1.75;
+    border-radius: 4px;
+    letter-spacing: 0.02857em;
+    text-transform: uppercase;
+    border-width: 0;
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    background-color: #45a049;
+}
+</style>

@@ -1,0 +1,31 @@
+#!/usr/bin/ucode
+// rfn-logout - Logout script for RFN
+// Place this file at: /www/cgi-bin/rfn-logout
+
+// Get session cookie
+function get_cookie(name) {
+    let cookies = getenv("HTTP_COOKIE") || "";
+    let cookie_pairs = split(cookies, "; ");
+    
+    for (let pair in cookie_pairs) {
+        let parts = split(pair, "=");
+        if (parts[0] == name) {
+            return parts[1];
+        }
+    }
+    return null;
+}
+
+let session_id = get_cookie("rfn_session");
+
+if (session_id) {
+    // Delete session file
+    let session_file = "/tmp/rfn_session_" + session_id;
+    system("rm -f " + session_file);
+}
+
+// Clear cookie and redirect to login
+print("Status: 302 Found\r\n");
+print("Set-Cookie: rfn_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly\r\n");
+print("Location: /cgi-bin/rfn-login\r\n");
+print("\r\n");
