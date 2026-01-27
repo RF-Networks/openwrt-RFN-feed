@@ -48,8 +48,8 @@
          
          // Clear the data buffer and reserve enough space in the buffer to store the incoming data.
 
---- a/src/SerialPortConstants.h
-+++ b/src/SerialPortConstants.h
+--- a/src/libserial/SerialPortConstants.h
++++ b/src/libserial/SerialPortConstants.h
 @@ -23,6 +23,7 @@
  #include <stdexcept>
  #include <string>
