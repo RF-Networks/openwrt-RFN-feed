@@ -17,6 +17,8 @@ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=461b19e2f883574b9d52b3eb94d25847ebfbd85a
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 CMAKE_INSTALL:=1
+# Force Unix Makefiles instead of Ninja if problems persist
+PKG_USE_NINJA:=0
 
 PKG_MAINTAINER:=Libserial Deveopment Team <crayzeewulf@gmai.com>
 PKG_LICENSE:=LGPL-2.1
