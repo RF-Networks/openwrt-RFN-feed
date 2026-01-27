@@ -24,6 +24,8 @@ PKG_LICENSE:=LGPL-2.1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+CMAKE_OPTIONS += -DLIBSERIAL_ENABLE_TESTING=OFF
+
 define Package/libserial
   TITLE:=Serial port library
   SECTION:=libs
