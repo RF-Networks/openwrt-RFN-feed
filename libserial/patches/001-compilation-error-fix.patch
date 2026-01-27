@@ -47,3 +47,14 @@
          size_t maximum_number_of_bytes = dataString.max_size() ;
          
          // Clear the data buffer and reserve enough space in the buffer to store the incoming data.
+
+--- a/src/SerialPortConstants.h
++++ b/src/SerialPortConstants.h
+@@ -23,6 +23,7 @@
+ #include <stdexcept>
+ #include <string>
+ #include <termios.h>
+ #include <vector>
++#include <stdint.h>
+ 
+ namespace LibSerial
