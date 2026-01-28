@@ -20,9 +20,6 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 PKG_MAINTAINER:=Libserial Deveopment Team <crayzeewulf@gmai.com>
 PKG_LICENSE:=LGPL-2.1
 
-include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
-
 CMAKE_OPTIONS += \
 	-DLIBSERIAL_ENABLE_TESTING=OFF \
 	-DLIBSERIAL_BUILD_EXAMPLES=OFF \
@@ -34,6 +31,9 @@ CMAKE_OPTIONS += \
 CMAKE_INSTALL:=1
 # Force Unix Makefiles instead of Ninja if problems persist
 PKG_USE_NINJA:=0
+
+include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/libserial
   TITLE:=Serial port library
