@@ -1,0 +1,265 @@
+#!/usr/bin/ucode
+// rfn-system-info - System Information Tab Content
+
+import { readfile, writefile, stdin } from "fs";
+
+// Session management functions
+function get_cookie(name) {
+    let cookies = getenv("HTTP_COOKIE") || "";
+    let cookie_pairs = split(cookies, "; ");
+    
+    for (let pair in cookie_pairs) {
+        let parts = split(pair, "=");
+        if (parts[0] == name) {
+            return parts[1];
+        }
+    }
+    return null;
+}
+
+function validate_session(session_id) {
+    if (!session_id) return false;
+    
+    // Read session file
+    let session_file = "/tmp/rfn_session_" + session_id;
+    let session_data = readfile(session_file);
+    
+    if (!session_data) return false;
+    
+    // Parse session data (format: username:timestamp)
+    let parts = split(trim(session_data), ":");
+    if (length(parts) != 2) return false;
+    
+    let timestamp = int(parts[1]);
+    let now = time();
+    
+    // Session expires after 1 hour
+    if (now - timestamp > 3600) {
+        system("rm -f " + session_file);
+        return false;
+    }
+    
+    return parts[0]; // Return username
+}
+
+// Check for session
+let session_id = get_cookie("rfn_session");
+let username = validate_session(session_id);
+
+if (!username) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<p>Session expired. Please <a href='/cgi-bin/rfn-login'>login</a> again.</p>");
+    exit(0);
+}
+
+// Handle POST request for password change
+let request_method = getenv("REQUEST_METHOD");
+
+if (request_method == "POST") {
+    // Read POST data from stdin
+    let content_length = int(getenv("CONTENT_LENGTH") || "0");
+    let post_data = "";
+    
+    if (content_length > 0) {
+        // Read from stdin using fs module
+        post_data = stdin.read(content_length);
+    }
+    
+    // Simple URL decode function
+    function urlDecode(str) {
+        str = replace(str, "+", " ");
+        // Handle %XX encoding
+        let result = "";
+        let i = 0;
+        while (i < length(str)) {
+            if (substr(str, i, 1) == "%" && i + 2 < length(str)) {
+                let hex = substr(str, i + 1, 2);
+                // Simple hex to char conversion for common characters
+                let decoded = hex;
+                if (hex == "21") decoded = "!";
+                else if (hex == "22") decoded = '"';
+                else if (hex == "23") decoded = "#";
+                else if (hex == "24") decoded = "$";
+                else if (hex == "25") decoded = "%";
+                else if (hex == "26") decoded = "&";
+                else if (hex == "27") decoded = "'";
+                else if (hex == "28") decoded = "(";
+                else if (hex == "29") decoded = ")";
+                else if (hex == "2A") decoded = "*";
+                else if (hex == "2B") decoded = "+";
+                else if (hex == "2C") decoded = ",";
+                else if (hex == "2D") decoded = "-";
+                else if (hex == "2E") decoded = ".";
+                else if (hex == "2F") decoded = "/";
+                else if (hex == "3A") decoded = ":";
+                else if (hex == "3B") decoded = ";";
+                else if (hex == "3C") decoded = "<";
+                else if (hex == "3D") decoded = "=";
+                else if (hex == "3E") decoded = ">";
+                else if (hex == "3F") decoded = "?";
+                else if (hex == "40") decoded = "@";
+                else if (hex == "5B") decoded = "[";
+                else if (hex == "5C") decoded = "\\";
+                else if (hex == "5D") decoded = "]";
+                else if (hex == "5E") decoded = "^";
+                else if (hex == "5F") decoded = "_";
+                else if (hex == "60") decoded = "`";
+                else if (hex == "7B") decoded = "{";
+                else if (hex == "7C") decoded = "|";
+                else if (hex == "7D") decoded = "}";
+                else if (hex == "7E") decoded = "~";
+                else decoded = substr(str, i, 3);
+                
+                result += decoded;
+                i += 3;
+            } else {
+                result += substr(str, i, 1);
+                i += 1;
+            }
+        }
+        return result;
+    }
+    
+    // Parse POST data
+    let params = {};
+    let pairs = split(post_data, "&");
+    for (let pair in pairs) {
+        let kv = split(pair, "=");
+        if (length(kv) == 2) {
+            params[urlDecode(kv[0])] = urlDecode(kv[1]);
+        }
+    }
+    
+    if (params.action == "change_password" && params.new_password) {
+        let new_password = params.new_password;
+        
+        // Change root password using RPC system
+        let result = system("ubus call rpc-sys password_set '{\"user\":\"root\",\"password\":\"" + new_password + "\"}'");
+        
+        if (result == 0) {
+            // Password changed successfully, schedule reboot
+            system("(sleep 2 && reboot -f) &");
+            
+            print("Content-Type: application/json\r\n\r\n");
+            print('{"success": true, "message": "Password changed, rebooting..."}');
+            exit(0);
+        } else {
+            print("Content-Type: application/json\r\n\r\n");
+            print('{"success": false, "error": "Failed to change password"}');
+            exit(1);
+        }
+    }
+    
+    print("Content-Type: application/json\r\n\r\n");
+    print('{"success": false, "error": "Invalid request"}');
+    exit(1);
+}
+
+// Read OpenWrt version from /etc/openwrt_release
+let version_info = {};
+let release_file = readfile("/etc/openwrt_release");
+if (release_file) {
+    let lines = split(release_file, "\n");
+    for (let line in lines) {
+        let parts = match(line, /^([^=]+)='([^']+)'$/);
+        if (parts && parts[1]) {
+            version_info[parts[1]] = parts[2];
+        }
+    }
+}
+
+let distrib_id = version_info.DISTRIB_ID || "OpenWrt";
+let distrib_release = version_info.DISTRIB_RELEASE || "Unknown";
+let distrib_description = version_info.DISTRIB_DESCRIPTION || "OpenWrt";
+
+// Get hostname
+let hostname_data = readfile("/proc/sys/kernel/hostname");
+let hostname = hostname_data ? trim(hostname_data) : "unknown";
+
+// Get IP address for LAN and WiFi interfaces
+let ip_address = "";
+let temp_ip_file = "/tmp/rfn_ip_" + time();
+
+// Get LAN IP (br-lan interface)
+system("ip -4 addr show br-lan 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1 > " + temp_ip_file);
+let lan_ip_data = readfile(temp_ip_file);
+let lan_ip = lan_ip_data ? trim(lan_ip_data) : "";
+
+// Get WiFi IP (phy0-sta0 interface)
+system("ip -4 addr show phy0-sta0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1 > " + temp_ip_file);
+let wifi_ip_data = readfile(temp_ip_file);
+let wifi_ip = wifi_ip_data ? trim(wifi_ip_data) : "";
+
+// Get Cellular IP (check wwan0, usb0, eth1 interfaces)
+let cellular_ip = "";
+system("ip -4 addr show wwan0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1 > " + temp_ip_file);
+let cellular_ip_data = readfile(temp_ip_file);
+cellular_ip = cellular_ip_data ? trim(cellular_ip_data) : "";
+
+if (!cellular_ip) {
+    system("ip -4 addr show usb0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1 > " + temp_ip_file);
+    cellular_ip_data = readfile(temp_ip_file);
+    cellular_ip = cellular_ip_data ? trim(cellular_ip_data) : "";
+}
+
+if (!cellular_ip) {
+    system("ip -4 addr show eth1 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1 > " + temp_ip_file);
+    cellular_ip_data = readfile(temp_ip_file);
+    cellular_ip = cellular_ip_data ? trim(cellular_ip_data) : "";
+}
+
+// Format the IP address display
+let ip_parts = [];
+if (lan_ip) {
+    push(ip_parts, "(LAN: " + lan_ip + ")");
+}
+if (wifi_ip) {
+    push(ip_parts, "(WiFi: " + wifi_ip + ")");
+}
+if (cellular_ip) {
+    push(ip_parts, "(4G: " + cellular_ip + ")");
+}
+
+if (length(ip_parts) > 0) {
+    ip_address = join(" ", ip_parts);
+} else {
+    ip_address = "No IP configured";
+}
+
+system("rm -f " + temp_ip_file);
+
+// Get uptime - simplified
+let uptime = "Unknown";
+let uptime_file = readfile("/proc/uptime");
+if (uptime_file) {
+    let uptime_sec = int(split(uptime_file, " ")[0]);
+    if (uptime_sec) {
+        let days = int(uptime_sec / 86400);
+        let hours = int((uptime_sec % 86400) / 3600);
+        let minutes = int((uptime_sec % 3600) / 60);
+        uptime = "" + days + " days, " + hours + " hours, " + minutes + " minutes";
+    }
+}
+
+// Read template file
+let template = readfile("/www/templates/rfn/system-info.html");
+
+if (!template) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<p>Error: Template not found</p>");
+    exit(1);
+}
+
+// Replace template variables
+template = replace(template, "{{ username }}", username);
+template = replace(template, "{{ distrib_id }}", distrib_id);
+template = replace(template, "{{ distrib_release }}", distrib_release);
+template = replace(template, "{{ distrib_description }}", distrib_description);
+template = replace(template, "{{ hostname }}", hostname);
+template = replace(template, "{{ ip_address }}", ip_address);
+template = replace(template, "{{ uptime }}", uptime);
+
+// HTTP Headers and output
+print("Content-Type: text/html; charset=utf-8\r\n");
+print("\r\n");
+print(template);

@@ -1,0 +1,364 @@
+<h2>Configuration</h2>
+<div id="config-container"></div>
+
+<div class="button-group">
+    <button type="button" id="configure-btn" class="action-btn" onclick="enableConfigMode()">Configure</button>
+    <button type="button" id="cancel-btn" class="action-btn cancel-btn" style="display: none;" onclick="cancelConfigMode()">Cancel</button>
+    <button type="button" id="save-btn" class="action-btn save-btn" style="display: none;" onclick="saveConfiguration()">Save</button>
+</div>
+
+<script>
+// Store original config data
+var configData = {{ config_data }};
+var originalConfigData = JSON.parse(JSON.stringify(configData));
+var editMode = false;
+
+// Field type definitions (can be extended with UCI metadata)
+var fieldTypes = {
+    'debug.level': 'select',
+    'server.mode': 'select'
+};
+
+// Field options for select fields
+var fieldOptions = {
+    'debug.level': [
+        { value: '0', label: '0: Emergency/Debugging (most verbose)' },
+        { value: '1', label: '1: Alert/Debugging' },
+        { value: '2', label: '2: Critical/Informational' },
+        { value: '3', label: '3: Error/Warning' },
+        { value: '4', label: '4: Warning/Error' },
+        { value: '5', label: '5: Notice' },
+        { value: '6', label: '6: Informational' },
+        { value: '7', label: '7: Debug' },
+        { value: '8', label: '8: Debug/Info (least severe for console)' }
+    ],
+    'server.mode': [
+        { value: '0', label: '0 - Standard' },
+        { value: '1', label: '1 - Transparent' },
+        { value: '2', label: '2 - Bridge' },
+        { value: '3', label: '3 - Telit Cloud' },
+        { value: '4', label: '4 - AWS IoT' },
+        { value: '5', label: '5 - ThingsBoard' }
+    ]
+};
+
+function isConfigEmpty() {
+    return Object.keys(configData).length === 0;
+}
+
+function renderConfiguration() {
+    var container = document.getElementById('config-container');
+    container.innerHTML = '';
+    
+    // Check if config is empty
+    if (isConfigEmpty()) {
+        var emptyMessage = document.createElement('div');
+        emptyMessage.className = 'empty-message';
+        emptyMessage.textContent = 'No configuration available';
+        container.appendChild(emptyMessage);
+        return;
+    }
+    
+    for (var section in configData) {
+        var sectionDiv = document.createElement('div');
+        sectionDiv.className = 'config-section';
+        
+        var sectionTitle = document.createElement('h3');
+        sectionTitle.textContent = section.charAt(0).toUpperCase() + section.slice(1);
+        sectionDiv.appendChild(sectionTitle);
+        
+        var form = document.createElement('div');
+        form.className = 'config-form';
+        
+        for (var option in configData[section]) {
+            var formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+            
+            var label = document.createElement('label');
+            // Convert camelCase and underscores to spaces, then capitalize
+            var labelText = option
+                .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space between lowercase and uppercase
+                .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Add space before last capital in acronym (e.g., "XMLParser" -> "XML Parser")
+                .replace(/_/g, ' ') // Replace underscores with spaces
+                .trim() // Remove leading/trailing spaces
+                .replace(/\b\w/g, l => l.toUpperCase()); // Capitalize first letter of each word
+            label.textContent = labelText + ':';
+            label.setAttribute('for', section + '_' + option);
+            formGroup.appendChild(label);
+            
+            var fieldKey = section + '.' + option;
+            var fieldType = fieldTypes[fieldKey] || 'text';
+            var value = configData[section][option];
+            
+            var input;
+            if (fieldType === 'range') {
+                var container = document.createElement('div');
+                container.className = 'range-container';
+                
+                input = document.createElement('input');
+                input.type = 'range';
+                input.id = section + '_' + option;
+                input.className = 'form-range';
+                input.value = value;
+                input.min = 0;
+                input.max = 100;
+                input.disabled = !editMode;
+                
+                var valueDisplay = document.createElement('span');
+                valueDisplay.className = 'range-value';
+                valueDisplay.textContent = value;
+                valueDisplay.id = section + '_' + option + '_value';
+                
+                input.addEventListener('input', function(e) {
+                    document.getElementById(e.target.id + '_value').textContent = e.target.value;
+                });
+                
+                container.appendChild(input);
+                container.appendChild(valueDisplay);
+                formGroup.appendChild(container);
+            } else if (fieldType === 'select') {
+                input = document.createElement('select');
+                input.id = section + '_' + option;
+                input.className = 'form-input';
+                input.disabled = !editMode;
+                
+                // Add options based on field definition
+                var options = fieldOptions[fieldKey] || [];
+                for (var i = 0; i < options.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = options[i].value;
+                    opt.textContent = options[i].label;
+                    if (options[i].value === value) {
+                        opt.selected = true;
+                    }
+                    input.appendChild(opt);
+                }
+                
+                formGroup.appendChild(input);
+            } else {
+                input = document.createElement('input');
+                input.type = 'text';
+                input.id = section + '_' + option;
+                input.className = 'form-input';
+                input.value = value;
+                input.disabled = !editMode;
+            }
+            
+            if (fieldType !== 'range' && fieldType !== 'select') {
+                formGroup.appendChild(input);
+            }
+            
+            form.appendChild(formGroup);
+        }
+        
+        sectionDiv.appendChild(form);
+        container.appendChild(sectionDiv);
+    }
+}
+
+function enableConfigMode() {
+    editMode = true;
+    document.getElementById('configure-btn').style.display = 'none';
+    document.getElementById('cancel-btn').style.display = 'inline-block';
+    document.getElementById('save-btn').style.display = 'inline-block';
+    
+    // Enable all inputs
+    var inputs = document.querySelectorAll('.form-input, .form-range');
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].disabled = false;
+    }
+}
+
+function cancelConfigMode() {
+    editMode = false;
+    document.getElementById('configure-btn').style.display = 'inline-block';
+    document.getElementById('cancel-btn').style.display = 'none';
+    document.getElementById('save-btn').style.display = 'none';
+    
+    // Restore original data
+    configData = JSON.parse(JSON.stringify(originalConfigData));
+    renderConfiguration();
+}
+
+function saveConfiguration() {
+    // Collect changed values
+    var changes = [];
+    
+    for (var section in configData) {
+        for (var option in configData[section]) {
+            var inputId = section + '_' + option;
+            var input = document.getElementById(inputId);
+            if (input) {
+                var newValue = input.value;
+                if (newValue !== originalConfigData[section][option]) {
+                    changes.push(section + '.' + option + '=' + encodeURIComponent(newValue));
+                }
+                // Update config data
+                configData[section][option] = newValue;
+            }
+        }
+    }
+    
+    if (changes.length === 0) {
+        alert('No changes to save');
+        cancelConfigMode();
+        return;
+    }
+
+    console.log('Changes to save:', changes);
+    
+    // Send to server
+    fetch('/cgi-bin/rfn-configuration', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=save_config&config_data=' + changes.join(',')
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Configuration saved successfully');
+            originalConfigData = JSON.parse(JSON.stringify(configData));
+            cancelConfigMode();
+        } else {
+            alert('Failed to save configuration: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error.message);
+    });
+}
+
+// Initial render
+renderConfiguration();
+
+// Hide Configure button if config is empty
+if (isConfigEmpty()) {
+    document.getElementById('configure-btn').style.display = 'none';
+}
+</script>
+
+<style>
+.config-section {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.config-section h3 {
+    margin-top: 0;
+    color: #4caf50;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.config-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.form-input, .form-range {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.form-input:disabled, .form-range:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.form-input:focus:not(:disabled), .form-range:focus:not(:disabled) {
+    outline: none;
+    border-color: #4caf50;
+}
+
+.range-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-range {
+    flex: 1;
+    padding: 0;
+}
+
+.range-value {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 600;
+    color: #4caf50;
+}
+
+.button-group {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-bottom: 20px;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+#configure-btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+#configure-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+.save-btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: #45a049;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 16px;
+    font-style: italic;
+}
+</style>

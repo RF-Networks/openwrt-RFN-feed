@@ -1,0 +1,94 @@
+#!/usr/bin/ucode
+// rfn - Hello World CGI Script with Template
+// Place this file at: /www/cgi-bin/rfn
+
+import { readfile } from "fs";
+
+// Session management functions
+function get_cookie(name) {
+    let cookies = getenv("HTTP_COOKIE") || "";
+    let cookie_pairs = split(cookies, "; ");
+    
+    for (let pair in cookie_pairs) {
+        let parts = split(pair, "=");
+        if (parts[0] == name) {
+            return parts[1];
+        }
+    }
+    return null;
+}
+
+function validate_session(session_id) {
+    if (!session_id) return false;
+    
+    // Read session file
+    let session_file = "/tmp/rfn_session_" + session_id;
+    let session_data = readfile(session_file);
+    
+    if (!session_data) return false;
+    
+    // Parse session data (format: username:timestamp)
+    let parts = split(trim(session_data), ":");
+    if (length(parts) != 2) return false;
+    
+    let timestamp = int(parts[1]);
+    let now = time();
+    
+    // Session expires after 1 hour
+    if (now - timestamp > 3600) {
+        system("rm -f " + session_file);
+        return false;
+    }
+    
+    return parts[0]; // Return username
+}
+
+// Check for session
+let session_id = get_cookie("rfn_session");
+let username = validate_session(session_id);
+
+if (!username) {
+    // Redirect to login page
+    print("Status: 302 Found\r\n");
+    print("Location: /cgi-bin/rfn-login\r\n");
+    print("\r\n");
+    exit(0);
+}
+
+// Read OpenWrt version from /etc/openwrt_release
+let version_info = {};
+let release_file = readfile("/etc/openwrt_release");
+if (release_file) {
+    let lines = split(release_file, "\n");
+    for (let line in lines) {
+        let parts = match(line, /^([^=]+)='([^']+)'$/);
+        if (parts && parts[1]) {
+            version_info[parts[1]] = parts[2];
+        }
+    }
+}
+
+let distrib_id = version_info.DISTRIB_ID || "OpenWrt";
+let distrib_release = version_info.DISTRIB_RELEASE || "Unknown";
+let distrib_description = version_info.DISTRIB_DESCRIPTION || "OpenWrt";
+
+// Read template file
+let template = readfile("/www/templates/rfn/main.html");
+
+if (!template) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<h1>Error: Template not found</h1>");
+    print("<p>Please create /www/templates/rfn/main.html</p>");
+    exit(1);
+}
+
+// Replace template variables
+template = replace(template, "{{ username }}", username);
+template = replace(template, "{{ distrib_id }}", distrib_id);
+template = replace(template, "{{ distrib_release }}", distrib_release);
+template = replace(template, "{{ distrib_description }}", distrib_description);
+
+// HTTP Headers and output
+print("Content-Type: text/html; charset=utf-8\r\n");
+print("\r\n");
+print(template);

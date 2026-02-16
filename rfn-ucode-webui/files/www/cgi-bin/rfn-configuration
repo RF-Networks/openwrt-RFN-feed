@@ -1,0 +1,202 @@
+#!/usr/bin/ucode
+// rfn-configuration - Configuration Tab Content
+
+import { readfile, writefile, stdin } from "fs";
+
+
+ // Logging function
+function log_message(msg) {
+    let timestamp = sprintf("%d", time());
+    let log_entry = sprintf("[%s] %s\n", timestamp, msg);
+    let log_file = "/tmp/rfn.log";
+    
+    // Append to log file
+    let existing = readfile(log_file) || "";
+   writefile(log_file, existing + log_entry);
+    
+    // Also log to system log
+    system("logger -t rfn '" + replace(msg, "'", "") + "'");
+}
+
+// Session management functions
+function get_cookie(name) {
+    let cookies = getenv("HTTP_COOKIE") || "";
+    let cookie_pairs = split(cookies, "; ");
+    
+    for (let pair in cookie_pairs) {
+        let parts = split(pair, "=");
+        if (parts[0] == name) {
+            return parts[1];
+        }
+    }
+    return null;
+}
+
+function validate_session(session_id) {
+    if (!session_id) return false;
+    
+    // Read session file
+    let session_file = "/tmp/rfn_session_" + session_id;
+    let session_data = readfile(session_file);
+    
+    if (!session_data) return false;
+    
+    // Parse session data (format: username:timestamp)
+    let parts = split(trim(session_data), ":");
+    if (length(parts) != 2) return false;
+    
+    let timestamp = int(parts[1]);
+    let now = time();
+    
+    // Session expires after 1 hour
+    if (now - timestamp > 3600) {
+        system("rm -f " + session_file);
+        return false;
+    }
+    
+    return parts[0]; // Return username
+}
+
+// Check for session
+let session_id = get_cookie("rfn_session");
+let username = validate_session(session_id);
+
+if (!username) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<p>Session expired. Please <a href='/cgi-bin/rfn-login'>login</a> again.</p>");
+    exit(0);
+}
+
+// Handle POST request for saving configuration
+let request_method = getenv("REQUEST_METHOD");
+
+if (request_method == "POST") {
+    let content_length = int(getenv("CONTENT_LENGTH") || "0");
+    let post_data = "";
+    
+    if (content_length > 0) {
+        post_data = stdin.read(content_length);
+    }
+    
+    // Parse POST data
+    let params = {};
+    if (post_data) {
+        let pairs = split(post_data, "&");
+        for (let pair in pairs) {
+            let kv = split(pair, "=");
+            if (length(kv) >= 2) {
+                // URL decode
+                let key = kv[0];
+                // Join remaining parts in case value contains '=' signs
+                let value = "";
+                for (let i = 1; i < length(kv); i++) {
+                    if (i > 1) value += "=";
+                    value += kv[i];
+                }
+                value = replace(value, "+", " ");
+                params[key] = value;
+            }
+        }
+    }
+    
+    if (params.action == "save_config") {
+        // Save configuration changes to UCI
+        let config_data = params.config_data || "";
+        let config_obj = {};
+        
+        // Parse JSON config data (simple parsing)
+        // Expected format: section.option=value
+        log_message("Config data to save: " + config_data);
+        let changes = split(config_data, ",");
+        for (let change in changes) {
+            let parts = split(change, "=");
+            if (length(parts) == 2) {
+                let path = parts[0];
+                let value = parts[1];
+                log_message("Setting UCI " + path + " to " + value);
+                // Execute UCI set command
+                system("uci set rfn." + path + "='" + value + "'");
+            }
+        }
+        
+        // Commit changes
+        log_message("Committing UCI rfn configuration");
+        system("uci commit rfn");
+        
+        print("Content-Type: application/json\r\n\r\n");
+        print('{"success": true, "message": "Configuration saved"}');
+        exit(0);
+    }
+}
+
+// Read UCI rfn configuration
+let temp_file = "/tmp/rfn_config_" + time();
+let config_sections = {};
+
+// Get all sections from rfn config
+system("uci show rfn 2>/dev/null > " + temp_file);
+let uci_data = readfile(temp_file);
+system("rm -f " + temp_file);
+
+if (uci_data) {
+    let lines = split(uci_data, "\n");
+    for (let line in lines) {
+        line = trim(line);
+        if (line) {
+            // Parse: rfn.section.option=value or rfn.section.option (without value)
+            let match_result = match(line, /^rfn\.([^.]+)\.([^=]+)(=(.*))?$/);
+            if (match_result && length(match_result) >= 3) {
+                let section = match_result[1];
+                let option = match_result[2];
+                let value = "";
+                
+                // Check if value exists (match_result[4] contains the value part after =)
+                if (length(match_result) >= 5 && match_result[4] != null) {
+                    value = match_result[4];
+                    // Remove quotes
+                    value = replace(value, "'", "");
+                }
+                
+                if (!config_sections[section]) {
+                    config_sections[section] = {};
+                }
+                config_sections[section][option] = value;
+            }
+        }
+    }
+}
+
+// Build JSON config data for template
+let config_json = "{";
+let first_section = true;
+for (let section in config_sections) {
+    if (!first_section) config_json += ",";
+    config_json += '"' + section + '":{';
+    let first_option = true;
+    for (let option in config_sections[section]) {
+        if (!first_option) config_json += ",";
+        config_json += '"' + option + '":"' + config_sections[section][option] + '"';
+        first_option = false;
+    }
+    config_json += "}";
+    first_section = false;
+}
+config_json += "}";
+
+// Read template file
+let template = readfile("/www/templates/rfn/configuration.html");
+
+if (!template) {
+    print("Content-Type: text/html\r\n\r\n");
+    print("<p>Error: Template not found</p>");
+    exit(1);
+}
+
+// Replace template variables
+template = replace(template, "{{ username }}", username);
+template = replace(template, "{{ config_data }}", config_json);
+
+// HTTP Headers and output
+print("Content-Type: text/html; charset=utf-8\r\n");
+print("\r\n");
+print(template);

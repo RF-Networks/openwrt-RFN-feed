@@ -1,0 +1,11 @@
+--- a/RFPPFC++/CMakeLists.txt
++++ b/RFPPFC++/CMakeLists.txt
+@@ -260,7 +260,7 @@ set(RFPPF_HEADERS
+ )
+ 
+ # Create library
+-add_library(${PROJECT_NAME} STATIC ${RFPPF_SOURCES} ${RFPPF_HEADERS})
++add_library(${PROJECT_NAME} SHARED ${RFPPF_SOURCES} ${RFPPF_HEADERS})
+ 
+ # Set include directories for the library
+ target_include_directories(${PROJECT_NAME} PUBLIC
