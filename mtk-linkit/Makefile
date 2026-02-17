@@ -37,7 +37,7 @@ define Build/Prepare
 		mv ./files/etc/rc.button/wps $(TOPDIR)/files/etc/rc.button/wps; \
 	fi
 	if [ -f "./files/etc/rc.local" ]; then \
-		mv ./files/etc/rc.locl $(TOPDIR)/files/etc/rc.local; \
+		mv ./files/etc/rc.local $(TOPDIR)/files/etc/rc.local; \
 	fi
 	$(call Build/Prepare/Default)
 endef
