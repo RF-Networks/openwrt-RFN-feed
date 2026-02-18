@@ -20,6 +20,7 @@ define Package/mtk-linkit
 		+luci +luci-theme-openwrt +luci-app-samba4 +luci-lib-json +luci-proto-qmi \
 		+luci-proto-modemmanager +rpcd-mod-rpcsys +cgi-io +uboot-envtools \
 		+kmod-cfg80211 +wireless-tools +libuci +serialconsole +kmod-usb-net +kmod-usb-net-qmi-wwan \
+		+kmod-usb-serial  +kmod-usb-serial-option +kmod-usb-serial-qualcomm \
 		+libqmi +uqmi +qmi-utils +modemmanager \
 		+kmod-fs-vfat +kmod-fs-exfat +kmod-i2c-core +kmod-i2c-mt7628 \
 		+kmod-nls-base +kmod-nls-cp437 +kmod-nls-iso8859-1 \
