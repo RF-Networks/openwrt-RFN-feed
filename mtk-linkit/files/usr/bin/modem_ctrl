@@ -1,43 +1,44 @@
 #!/bin/sh
 
 modem_turn_on() {
-    echo "Turning modem on"
-	gpioset -z -p 10s -t 0 -c /dev/gpiochip0 16=0
-    gpioset -z -p 10s -t 0 -c /dev/gpiochip0 14=1
+	echo "Turning modem on"
+	gpioset --mode=time --sec 10 /dev/gpiochip0 16=0
+	gpioset --mode=time --sec 10 /dev/gpiochip0 14=1
 	sleep 10
-	gpioset -z -t 0 -c /dev/gpiochip0 14=0
+	gpioset --mode=time --sec 10 /dev/gpiochip0 14=0
 	gpioget -c /dev/gpiochip0 14
 	gpioget -c /dev/gpiochip0 16   
 }
 
 modem_turn_off() {
 	echo "Turning modem off"
-    gpioset -z -p 4s -t 0 -c /dev/gpiochip0 16=0
-    gpioset -z -p 1s -t 0 -c /dev/gpiochip0 14=1
-    sleep 1
-    gpioset -z -p 3s -t 0 -c /dev/gpiochip0 14=0
+	gpioset --mode=time --sec 4 /dev/gpiochip0 16=0
+	gpioset -z -p 1s -t 0 -c /dev/gpiochip0 14=1
+	gpioset --mode=time --sec 1 /dev/gpiochip0 14=1
+	sleep 1
+	gpioset --mode=time --sec 3 /dev/gpiochip0 14=0
 	sleep 3
 	gpioget -c /dev/gpiochip0 14
-    gpioget -c /dev/gpiochip0 16  
+	gpioget -c /dev/gpiochip0 16  
 }
 
 case $1 in
 on)
-    if [ ! -c "/dev/ttyACM0" ] && [ ! -c "/dev/cdc-wdm0" ]; then
+	if [ ! -c "/dev/ttyACM0" ] && [ ! -c "/dev/cdc-wdm0" ]; then
 		modem_turn_on
-    else
+	else
 		echo "Modem is on"
-    fi
-    ;;
+	fi
+	;;
 off)
-    if [ -c "/dev/ttyACM0" ] || [ -c "/dev/cdc-wdm0" ]; then
+	if [ -c "/dev/ttyACM0" ] || [ -c "/dev/cdc-wdm0" ]; then
 		modem_turn_off
-    else
+	else
 		echo "Modem is off"
-    fi
-    ;;
+	fi
+	;;
 restart)
 	modem_turn_off
 	modem_turn_on
-    ;;
+	;;
 esac
