@@ -13,7 +13,6 @@ modem_turn_on() {
 modem_turn_off() {
 	echo "Turning modem off"
 	gpioset --mode=time --sec 4 /dev/gpiochip0 16=0
-	gpioset -z -p 1s -t 0 -c /dev/gpiochip0 14=1
 	gpioset --mode=time --sec 1 /dev/gpiochip0 14=1
 	sleep 1
 	gpioset --mode=time --sec 3 /dev/gpiochip0 14=0
