@@ -1,0 +1,3 @@
+# Force ttyUSB2 to be the primary port for ModemManager
+ACTION=="add|change", SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="2c7c", ENV{ID_MODEL_ID}=="0195", KERNEL=="ttyUSB2", ENV{ID_MM_PORT_TYPE_AT_PRIMARY}="1"
+ACTION=="add|change", SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="2c7c", ENV{ID_MODEL_ID}=="0195", KERNEL=="ttyUSB3", ENV{ID_MM_PORT_TYPE_AT_SECONDARY}="1"
