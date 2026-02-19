@@ -6,8 +6,8 @@ modem_turn_on() {
 	gpioset --mode=time --sec 10 /dev/gpiochip0 14=1
 	sleep 10
 	gpioset --mode=time --sec 10 /dev/gpiochip0 14=0
-	gpioget -c /dev/gpiochip0 14
-	gpioget -c /dev/gpiochip0 16   
+	gpioget /dev/gpiochip0 14 > /dev/null
+	gpioget /dev/gpiochip0 16 > /dev/null 
 }
 
 modem_turn_off() {
@@ -17,8 +17,8 @@ modem_turn_off() {
 	sleep 1
 	gpioset --mode=time --sec 3 /dev/gpiochip0 14=0
 	sleep 3
-	gpioget -c /dev/gpiochip0 14
-	gpioget -c /dev/gpiochip0 16  
+	gpioget /dev/gpiochip0 14 > /dev/null
+	gpioget /dev/gpiochip0 16 > /dev/null
 }
 
 case $1 in
