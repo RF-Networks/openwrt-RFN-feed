@@ -1,6 +1,6 @@
 --- a/RFPPFC++/CMakeLists.txt
 +++ b/RFPPFC++/CMakeLists.txt
-@@ -260,7 +260,7 @@ set(RFPPF_HEADERS
+@@ -262,7 +262,7 @@ set(RFPPF_HEADERS
  )
  
  # Create library
