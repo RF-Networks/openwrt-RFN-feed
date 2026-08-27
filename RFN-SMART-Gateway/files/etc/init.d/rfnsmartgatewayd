@@ -1,0 +1,26 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2015 OpenWrt.org
+
+START=98
+STOP=9
+
+SERVICE_DAEMONIZE=1
+SERVICE_STOP_TIME=9
+
+boot()
+{
+    start
+}
+
+start()
+{
+    echo "Starting RF-Networks SMART Gateway application"
+    service_start /usr/bin/RFN-SMART-Gateway
+}
+
+stop() 
+{
+    echo "Stopping RF-Networks SMART Gateway application"
+    service_stop /usr/bin/RFN-SMART-Gateway
+}
+
