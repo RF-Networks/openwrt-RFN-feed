@@ -21,9 +21,9 @@ define Package/$(PKG_NAME)
   CATEGORY:=RFN
   TITLE:=SMART-Gateway software
   DEPENDS:=+libstdcpp +zlib +boost-filesystem +boost-atomic +boost-container +boost-json \
-    +librfppf +libserial +libubox +libuci +libgps30 +gpsd +gpsd-clients +libgpiod +libi2c \
-    +libopenssl3 +glib2 +libpcre2 +libffi +libmosquittopp +libmosquitto-ssl +libcares \
-    +libcurl4 +libnghttp2-14 +libmbedtls12 +modemmanager
+    +librfppf +libserial +libubox +libuci +libgps +gpsd +gpsd-clients +libgpiod +libi2c \
+    +libopenssl +glib2 +libpcre2 +libffi +libmosquittopp +libmosquitto-ssl +libcares \
+    +libcurl +libnghttp2 +libmbedtls +modemmanager
 endef
 define Package/$(PKG_NAME)/description
   SMART-Gateway software for reading tags.
