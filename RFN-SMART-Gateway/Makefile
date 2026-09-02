@@ -5,12 +5,12 @@
 #
 include $(TOPDIR)/rules.mk
 PKG_NAME:=RFN-SMART-Gateway
-PKG_VERSION:=2.1.0
+PKG_VERSION:=2.1.2
 PKG_RELEASE:=1
 PKG_SOURCE_URL:=https://bitbucket.org/rfnetwork/rfn-smart-gateway.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=7a1fbe73149db2217f7c6f8af2a714b80d8ebb35
+PKG_SOURCE_VERSION:=444ade0ef57796e4e0c83544c1d07c7a57e878e6
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_LICENSE:=LGPL-2.1+
@@ -23,7 +23,7 @@ define Package/$(PKG_NAME)
   DEPENDS:=+libstdcpp +zlib +boost-filesystem +boost-atomic +boost-container +boost-json \
     +librfppf +libserial +libubox +libuci +libgps +gpsd +gpsd-clients +libgpiod +libi2c \
     +libopenssl +glib2 +libpcre2 +libffi +libmosquittopp +libmosquitto-ssl +libcares \
-    +libcurl +libnghttp2 +libmbedtls +modemmanager
+    +libcurl +libnghttp2 +libmbedtls +modemmanager +libatomic
 endef
 define Package/$(PKG_NAME)/description
   SMART-Gateway software for reading tags.
